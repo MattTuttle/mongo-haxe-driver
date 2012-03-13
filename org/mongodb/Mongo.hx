@@ -55,13 +55,22 @@ class Mongo
 
 	public function insert(name:String, data:Dynamic)
 	{
-
+		var out:ByteOutput = new ByteOutput();
+		var bytes = BSON.encode(data);
+		out.writeBytes(bytes, 0, bytes.length);
+		request(out.getBytes);
 	}
 
 	public static function main()
 	{
 		var db:Mongo = new Mongo();
-		db.insert("users", "monkey = me");
+		db.insert("users", {
+			name: {
+				first: "Phil",
+				last: "Finkelstein"
+			},
+			age: 32
+		});
 	}
 
 	private var socket:Socket;
