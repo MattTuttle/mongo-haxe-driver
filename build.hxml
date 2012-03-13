@@ -1,2 +1,2 @@
 -neko Test.n
--main bson/BSON.hx
+-main org.mongodb.Mongo

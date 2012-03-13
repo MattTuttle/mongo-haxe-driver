@@ -1,8 +1,13 @@
 package org.mongodb;
 
+import haxe.Int32;
 import haxe.io.Bytes;
+import haxe.io.BytesOutput;
 import neko.net.Socket;
+import neko.net.SocketOutput;
 import neko.net.Host;
+import neko.io.File;
+import bson.BSON;
 
 /*
 enum MongoOpCodes
@@ -31,6 +36,7 @@ class Mongo
 	public function new(?host:String="localhost", ?port:Int=27017)
 	{
 		init(host, port);
+		requestId = 0;
 	}
 
 	public function init(hostname:String, port:Int)
@@ -42,27 +48,29 @@ class Mongo
 	public function request(data:Bytes, opCode:Int)
 	{
 		var out:SocketOutput = socket.output;
-		out.writeInt32(data.length);
-		out.writeInt32(requestID);
-		out.writeInt32(responseTo);
-		out.writeInt32(opCode);
+		out.writeInt32(Int32.ofInt(data.length));
+		out.writeInt32(Int32.ofInt(requestId));
+//		out.writeInt32(responseTo);
+		out.writeInt32(Int32.ofInt(opCode));
+		requestId += 1;
 	}
 
 	public function find(name:String)
 	{
-		writeHeader(2004);
+//		request(OP_QUERY);
 	}
 
 	public function insert(name:String, data:Dynamic)
 	{
-		var out:ByteOutput = new ByteOutput();
+		var out:BytesOutput = new BytesOutput();
 		var bytes = BSON.encode(data);
 		out.writeBytes(bytes, 0, bytes.length);
-		request(out.getBytes);
+		request(out.getBytes(), OP_INSERT);
 	}
 
 	public static function main()
 	{
+		/*
 		var db:Mongo = new Mongo();
 		db.insert("users", {
 			name: {
@@ -71,9 +79,30 @@ class Mongo
 			},
 			age: 32
 		});
+		*/
+
+		var object = {
+			name: "Matt",
+			date: {
+				year: 1985,
+				month: "August",
+				day: 13
+			},
+			male: true,
+			array: [
+				"more",
+				2,
+				false
+			]
+		};
+
+		var bytes:Bytes = BSON.encode(object);
+		var result:Dynamic = BSON.decode(bytes);
+		trace(result);
 	}
 
 	private var socket:Socket;
+	private var requestId:Int;
 
 	private static inline var OP_INSERT = 2002;
 	private static inline var OP_QUERY = 2004;

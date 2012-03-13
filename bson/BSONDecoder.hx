@@ -69,7 +69,7 @@ class BSONDecoder
 				bytes += Int32.toInt(input.readInt32()) + 4;
 				value = input.readUntil(0x00);
 			case 0x0F: // code w/ scope
-				throw "Unimplemented: code w/ scope"
+				throw "Unimplemented: code w/ scope";
 			case 0x10: // integer
 				value = Int32.toInt(input.readInt32());
 				bytes += 4;
