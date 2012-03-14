@@ -1,6 +1,7 @@
 package bson;
 
 import haxe.Int32;
+import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 
@@ -55,11 +56,15 @@ class BSONDecoder
 				value = (input.readByte() == 1) ? true : false;
 				bytes += 1;
 			case 0x09: // utc datetime (int64)
-				throw "Unimplemented: Timestamp";
+				value = readInt64(input);
+				bytes += 8;
 			case 0x0A: // null
 				value = null;
 			case 0x0B: // regular expression
-				throw "Unimplemented: Regex";
+				var pattern = input.readUntil(0x00);
+				bytes += pattern.length + 1;
+				value = input.readUntil(0x00);
+				bytes += value.length + 1;
 			case 0x0C: // DBPointer
 				throw "Deprecated: 0x0C DBPointer";
 			case 0x0D: // javascript
@@ -74,9 +79,11 @@ class BSONDecoder
 				value = Int32.toInt(input.readInt32());
 				bytes += 4;
 			case 0x11: // timestamp
-				throw "Unimplemented: Timestamp";
+				value = readInt64(input);
+				bytes += 8;
 			case 0x12: // int64
-				throw "Unimplemented: int64";
+				value = readInt64(input);
+				bytes += 8;
 			case 0xFF: // min key
 				value = "MIN";
 			case 0x7F: // max key
@@ -120,6 +127,13 @@ class BSONDecoder
 			length -= field.length;
 		}
 		return array;
+	}
+
+	private inline function readInt64(input:BytesInput):Int64
+	{
+		var high = input.readInt32();
+		var low = input.readInt32();
+		return Int64.make(high, low);
 	}
 
 	private var object:Dynamic;
