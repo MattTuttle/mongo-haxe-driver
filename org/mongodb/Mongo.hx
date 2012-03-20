@@ -151,8 +151,11 @@ class Mongo
 		};
 
 		var bytes:Bytes = BSON.encode(object);
-		var result:Dynamic = BSON.decode(bytes);
-		trace(result);
+		var fout = File.write("test.bson", true);
+		fout.writeBytes(bytes, 0, bytes.length);
+		fout.close();
+//		var result:Dynamic = BSON.decode(bytes);
+//		trace(result);
 	}
 
 	private var socket:Socket;
