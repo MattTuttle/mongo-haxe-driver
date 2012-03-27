@@ -1,4 +1,4 @@
-package bson;
+package org.bsonspec;
 
 import haxe.io.Bytes;
 
