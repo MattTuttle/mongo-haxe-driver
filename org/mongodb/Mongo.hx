@@ -7,7 +7,7 @@ import neko.net.Socket;
 import neko.net.SocketOutput;
 import neko.net.Host;
 import neko.io.File;
-import bson.BSON;
+import org.bsonspec.BSON;
 
 class Mongo
 {
@@ -146,7 +146,11 @@ class Mongo
 			array: [
 				"more",
 				2,
-				false
+				false,
+				{
+					hi: "ho"
+				},
+				"bob"
 			]
 		};
 
@@ -154,8 +158,8 @@ class Mongo
 		var fout = File.write("test.bson", true);
 		fout.writeBytes(bytes, 0, bytes.length);
 		fout.close();
-//		var result:Dynamic = BSON.decode(bytes);
-//		trace(result);
+		var result:Dynamic = BSON.decode(bytes);
+		trace(result);
 	}
 
 	private var socket:Socket;

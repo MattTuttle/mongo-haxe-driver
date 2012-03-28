@@ -1,4 +1,4 @@
-package bson;
+package org.bsonspec;
 
 import haxe.Int32;
 import haxe.io.Bytes;
@@ -9,11 +9,17 @@ class BSONEncoder
 
 	public function new(o:Dynamic)
 	{
+		// base object must have key/value pairs
+		if (Type.typeof(o) != Type.ValueType.TObject)
+		{
+			throw "Cannot convert a non-object to BSON";
+		}
+
 		var out:BytesOutput = new BytesOutput();
 		bytes = objectToBytes(o);
 		out.writeInt32(Int32.ofInt(bytes.length + 4));
 		out.writeBytes(bytes, 0, bytes.length);
-		out.writeByte(0x00);
+//		out.writeByte(0x00);
 		bytes = out.getBytes();
 	}
 
@@ -63,7 +69,6 @@ class BSONEncoder
 			bytes = objectToBytes(value);
 			out.writeInt32(Int32.ofInt(bytes.length));
 			out.writeBytes(bytes, 0, bytes.length);
-			out.writeByte(0x00); // terminate document
 		}
 		else
 		{
@@ -97,6 +102,7 @@ class BSONEncoder
 			bytes = convertToBytes(Std.string(i), a[i]);
 			out.writeBytes(bytes, 0, bytes.length);
 		}
+		out.writeByte(0x00); // terminate array
 		return out.getBytes();
 	}
 
@@ -116,6 +122,7 @@ class BSONEncoder
 				out.writeBytes(bytes, 0, bytes.length);
 			}
 		}
+		out.writeByte(0x00); // terminate object
 		return out.getBytes();
 	}
 
