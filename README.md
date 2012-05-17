@@ -3,24 +3,54 @@ MongoDB driver for Haxe
 
 This is a database driver for MongoDB written in Haxe and available for all targets allowing a socket connection (neko/php/cpp).
 
-Querying a collection
+Find all objects in a collection
 ------------------------------------
 
-Finding rows in a database can seem daunting but with Mongo's object model it is no different than accessing a Haxe object instance.
+Finding rows in a relational database can be a daunting process. Thankfully with Mongo it's just like accessing a regular Haxe object instance.
 
 ```haxe
-class Test
+import org.mongodb.Mongo;
+
+class Main
 {
 	public static function main()
 	{
 		var mongo = new Mongo();       // connects to MongoDB
-		var posts = mongo.blog.posts;  // gets the "blog.posts" collection
+		var posts = mongo.blog.posts;  // get the "blog.posts" collection
 
 		// loops through all objects in "test.posts"
-		for (post in coll.find())
+		for (post in posts.find())
 		{
 			trace(post.title); // assumes that all posts have a title
 		}
+	}
+}
+```
+
+Inserting and updating
+------------------------------------
+
+Inserting object in Mongo is just as simple as putting values in an Array<Dynamic>. Just create an object and put it in the collection by calling insert(). Updating objects is just as simple except we need a way to find the original object so we pass a selector object first.
+
+```haxe
+import org.mongodb.Mongo;
+
+class Main
+{
+	public static function main()
+	{
+		var mongo = new Mongo();       // connects to MongoDB
+		var posts = mongo.blog.posts;  // get the "blog.posts" collection
+
+		// creating a new post is as easy as making a new object
+		var post = {
+			title: 'My awesome post',
+			body: 'MongoDB is easy as pie'
+		};
+		posts.insert(post); // save the post in Mongo
+
+		post.body = 'Made some updates to my post';
+		posts.update({title: post.title}, post); // update the post
 	}
 }
 ```
