@@ -1,2 +1,3 @@
 -neko Test.n
--main org.mongodb.Mongo
+-cp test
+-main MongoTest
