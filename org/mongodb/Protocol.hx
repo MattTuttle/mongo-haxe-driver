@@ -1,9 +1,11 @@
 package org.mongodb;
 
 import haxe.Int32;
+import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 import haxe.io.Output;
+import haxe.io.Input;
 import org.bsonspec.BSON;
 import sys.net.Socket;
 import sys.net.Host;
@@ -43,7 +45,7 @@ class Protocol
 		request(OP_QUERY, out.getBytes());
 	}
 
-	public static inline function getMore(collection:String, cursorId:Int, number:Int = 0)
+	public static inline function getMore(collection:String, cursorId:Int64, number:Int = 0)
 	{
 		var out:BytesOutput = new BytesOutput();
 		out.writeInt32(Int32.ofInt(0)); // reserved
@@ -51,7 +53,9 @@ class Protocol
 		out.writeByte(0x00); // string terminator
 		out.writeInt32(Int32.ofInt(number));
 
-		//out.writeInt64(cursorId);
+		// write Int64
+		out.writeInt32(Int64.getHigh(cursorId));
+		out.writeInt32(Int64.getLow(cursorId));
 
 		request(OP_GETMORE, out.getBytes());
 	}
@@ -106,6 +110,32 @@ class Protocol
 		writeDocument(out, select);
 
 		request(OP_DELETE, out.getBytes());
+	}
+
+	public static inline function response(documents:Array<Dynamic>):Int64
+	{
+		var input = socket.input;
+		input.readInt32(); // length
+		input.readInt32(); // request id
+		input.readInt32(); // response to
+		input.readInt32(); // opcode
+		var flags:Int32        = input.readInt32(); // flags
+		var cursorId:Int64     = readInt64(input);
+		var startingFrom:Int32 = input.readInt32();
+		var numReturned:Int    = Int32.toNativeInt(input.readInt32());
+
+		for (i in 0...numReturned)
+		{
+			documents.push(BSON.decode(input));
+		}
+		return cursorId;
+	}
+
+	private static inline function readInt64(input:Input):Int64
+	{
+		var high = input.readInt32();
+		var low = input.readInt32();
+		return Int64.make(high, low);
 	}
 
 	private static inline function request(opcode:Int, data:Bytes, ?responseTo:Int = 0):Int

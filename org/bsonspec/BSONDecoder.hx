@@ -3,14 +3,13 @@ package org.bsonspec;
 import haxe.Int32;
 import haxe.Int64;
 import haxe.io.Bytes;
-import haxe.io.BytesInput;
+import haxe.io.Input;
 
 class BSONDecoder
 {
 
-	public function new(bytes:Bytes)
+	public function new(input:Input)
 	{
-		var input:BytesInput = new BytesInput(bytes);
 		var length = Int32.toInt(input.readInt32());
 		object = readObject(input, length - 4);
 	}
@@ -20,7 +19,7 @@ class BSONDecoder
 		return object;
 	}
 
-	public function readField(type:Int, input:BytesInput):Dynamic
+	public function readField(type:Int, input:Input):Dynamic
 	{
 		var value:Dynamic = null;
 		var key:String = input.readUntil(0x00); // read cstring
@@ -95,7 +94,7 @@ class BSONDecoder
 		return { key:key, value:value, length:bytes };
 	}
 
-	public function readObject(input:BytesInput, length:Int):Dynamic
+	public function readObject(input:Input, length:Int):Dynamic
 	{
 		var object:Dynamic = {};
 		while (length > 0)
@@ -112,7 +111,7 @@ class BSONDecoder
 		return object;
 	}
 
-	public function readArray(input:BytesInput, length:Int):Array<Dynamic>
+	public function readArray(input:Input, length:Int):Array<Dynamic>
 	{
 		var array:Array<Dynamic> = [];
 		while (length > 0)
@@ -129,7 +128,7 @@ class BSONDecoder
 		return array;
 	}
 
-	private inline function readInt64(input:BytesInput):Int64
+	private inline function readInt64(input:Input):Int64
 	{
 		var high = input.readInt32();
 		var low = input.readInt32();

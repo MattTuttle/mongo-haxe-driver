@@ -13,17 +13,35 @@ class MongoTest extends TestCase
 		db = mongo.test;
 		posts = db.posts;
 
-		//posts.update({'name': 'John Doe'}, {'$set': {'birth': '145'}});
+		var post = {
+			title: 'My awesome post',
+			body: 'More awesome content'
+		};
+		for (i in 0...105)
+			posts.insert(post);
+	}
+
+	public override function tearDown()
+	{
+		posts.remove({ title: 'My awesome post' });
 	}
 
 	public function testCursor()
 	{
-		var cursor:Cursor = posts.find();
-		for (obj in cursor)
+		var count = 0;
+		for (obj in posts.find())
 		{
-			Sys.println('hi');
+			count += 1;
 		}
-		assertTrue(true);
+		assertTrue(count == 105);
+	}
+
+	public function testData()
+	{
+		for (obj in posts.find())
+		{
+			assertTrue(obj.title == 'My awesome post');
+		}
 	}
 
 	public static function main()

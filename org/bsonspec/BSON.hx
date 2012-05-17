@@ -1,6 +1,7 @@
 package org.bsonspec;
 
 import haxe.io.Bytes;
+import haxe.io.Input;
 
 class BSON
 {
@@ -9,8 +10,8 @@ class BSON
 		return new BSONEncoder(o).getBytes();
 	}
 
-	public inline static function decode(b:Bytes):Dynamic {
-		return new BSONDecoder(b).getObject();
+	public inline static function decode(i:Input):Dynamic {
+		return new BSONDecoder(i).getObject();
 	}
 
 }
