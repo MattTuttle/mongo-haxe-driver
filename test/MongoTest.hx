@@ -13,7 +13,7 @@ class MongoTest extends TestCase
 		db = mongo.test;
 		posts = db.posts;
 
-		posts.insert({'name': 'John Doe'});
+		//posts.update({'name': 'John Doe'}, {'$set': {'birth': '145'}});
 	}
 
 	public function testCursor()
@@ -21,7 +21,7 @@ class MongoTest extends TestCase
 		var cursor:Cursor = posts.find();
 		for (obj in cursor)
 		{
-			trace('hi');
+			Sys.println('hi');
 		}
 		assertTrue(true);
 	}

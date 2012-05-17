@@ -1,11 +1,14 @@
 package org.mongodb;
 
+import haxe.Int64;
+
 class Cursor
 {
 
 	public function new(collection:String)
 	{
 		this.collection = collection;
+		//Protocol.getMore(collection, cursorId);
 	}
 
 	public function hasNext():Bool
@@ -18,21 +21,7 @@ class Cursor
 		return {};
 	}
 
-	// fill the cursor
-	/*private function getMore(number:Int, cursor:Int)
-	{
-		var out:BytesOutput = new BytesOutput();
-		out.writeInt32(Int32.ofInt(0)); // reserved
-		out.writeString(name);
-		out.writeByte(0x00); // string terminator
-		out.writeInt32(Int32.ofInt(number));
-
-		// TODO: write cursor
-//		out.writeBytes(cursor, 0, 16);
-
-		request(OP_GETMORE, out.getBytes());
-	}*/
-
-	public var collection(default, null):String;
+	private var collection:String;
+	private var cursorId:Int64;
 
 }
