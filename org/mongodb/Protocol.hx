@@ -36,8 +36,10 @@ class Protocol
 		out.writeByte(0x00); // string terminator
 		out.writeInt32(Int32.ofInt(skip));
 		out.writeInt32(Int32.ofInt(number));
+
 		if (query == null) query = {};
 		writeDocument(out, query);
+
 		if (returnFields != null) {
 			writeDocument(out, returnFields);
 		}
@@ -112,23 +114,40 @@ class Protocol
 		request(OP_DELETE, out.getBytes());
 	}
 
+	public static inline function getOne():Dynamic
+	{
+		var details = read();
+
+		if (details.numReturned == 1)
+			return BSON.decode(socket.input);
+		else
+			return null;
+	}
+
 	public static inline function response(documents:Array<Dynamic>):Int64
 	{
-		var input = socket.input;
-		input.readInt32(); // length
-		input.readInt32(); // request id
-		input.readInt32(); // response to
-		input.readInt32(); // opcode
-		var flags:Int32        = input.readInt32(); // flags
-		var cursorId:Int64     = readInt64(input);
-		var startingFrom:Int32 = input.readInt32();
-		var numReturned:Int    = Int32.toNativeInt(input.readInt32());
+		var details = read();
 
-		for (i in 0...numReturned)
+		for (i in 0...details.numReturned)
 		{
-			documents.push(BSON.decode(input));
+			documents.push(BSON.decode(socket.input));
 		}
-		return cursorId;
+		return details.cursorId;
+	}
+
+	private static inline function read():Dynamic
+	{
+		var input = socket.input;
+		return {
+			length:       input.readInt32(), // length
+			requestId:    input.readInt32(), // request id
+			responseTo:   input.readInt32(), // response to
+			opcode:       input.readInt32(), // opcode
+			flags:        input.readInt32(), // flags
+			cursorId:     readInt64(input),
+			startingFrom: input.readInt32(),
+			numReturned:  Int32.toNativeInt(input.readInt32())
+		};
 	}
 
 	private static inline function readInt64(input:Input):Int64

@@ -2,16 +2,22 @@ package org.mongodb;
 
 class Collection
 {
-	public function new(name:String, parent:Database)
+	public function new(name:String, db:String)
 	{
 		this.name = name;
-		this.db = parent;
+		this.fullname = db + "." + name;
 	}
 
 	public function find(?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0):Cursor
 	{
 		Protocol.query(fullname, query, returnFields, skip, number);
 		return new Cursor(fullname);
+	}
+
+	public function findOne(?query:Dynamic, ?returnFields:Dynamic):Dynamic
+	{
+		Protocol.query(fullname, query, returnFields, 0, -1);
+		return Protocol.getOne();
 	}
 
 	public function insert(fields:Dynamic)
@@ -29,13 +35,7 @@ class Collection
 		Protocol.remove(fullname, select);
 	}
 
-	public var fullname(getFullName, never):String;
-	private function getFullName():String
-	{
-		return db.name + '.' + name;
-	}
-
+	public var fullname(default, null):String;
 	public var name(default, null):String;
 
-	private var db:Database;
 }
