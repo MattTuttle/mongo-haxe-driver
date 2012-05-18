@@ -13,8 +13,6 @@ class MongoTest extends TestCase
 		db = mongo.test;
 		posts = db.posts;
 
-		db.createCollection("comments");
-
 		var post = {
 			title: 'My awesome post',
 			body: 'More awesome content'
@@ -28,6 +26,11 @@ class MongoTest extends TestCase
 		posts.remove({ title: 'My awesome post' });
 	}
 
+	public function testCount()
+	{
+		assertTrue(posts.count() == 105);
+	}
+
 	public function testCursor()
 	{
 		var count = 0;
@@ -35,7 +38,6 @@ class MongoTest extends TestCase
 		{
 			count += 1;
 		}
-		trace(count);
 		assertTrue(count == 105);
 	}
 

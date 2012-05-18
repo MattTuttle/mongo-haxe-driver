@@ -2,10 +2,11 @@ package org.mongodb;
 
 class Collection
 {
-	public function new(name:String, db:String)
+	public function new(name:String, db:Database)
 	{
 		this.name = name;
-		this.fullname = db + "." + name;
+		this.fullname = db.name + "." + name;
+		this.db = db;
 	}
 
 	public function find(?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0):Cursor
@@ -35,7 +36,18 @@ class Collection
 		Protocol.remove(fullname, select);
 	}
 
+	public function create() { db.createCollection(name); }
+	public function drop() { db.dropCollection(name); }
+	public function rename(to:String) { db.renameCollection(name, to); }
+
+	public function count():Int
+	{
+		var result = db.runCommand({count: name});
+		return result.n;
+	}
+
 	public var fullname(default, null):String;
 	public var name(default, null):String;
+	private var db:Database;
 
 }
