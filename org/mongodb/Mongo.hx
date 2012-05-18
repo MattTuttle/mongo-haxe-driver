@@ -1,7 +1,5 @@
 package org.mongodb;
 
-import neko.io.File;
-
 class Mongo implements Dynamic<Database>
 {
 
