@@ -65,17 +65,14 @@ class Database implements Dynamic<Collection>
 	{
 		var n = runCommand({getnonce: 1});
 
-		//var a = runCommand({
-		var a = {
+		var a = runCommand({
 			authenticate: 1,
 			user: username,
 			nonce: n.nonce,
 			key: Md5.encode(n.nonce + username + Md5.encode(username + ":mongo:" + password))
-		};
-		trace(Reflect.fields(a));
+		});
 
-		//return (a.ok == 1);
-		return false;
+		return (a.ok == 1);
 	}
 
 	/**
