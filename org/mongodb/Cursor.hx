@@ -20,6 +20,7 @@ class Cursor
 		if (documents.length == 0)
 		{
 			finished = true;
+			Protocol.killCursors([cursorId]);
 			return false;
 		}
 		else

@@ -10,15 +10,17 @@ class MongoTest extends TestCase
 	public override function setup()
 	{
 		mongo = new Mongo();
-		db = mongo.test;
+		db = mongo.blog;
 		posts = db.posts;
 
 		var post = {
 			title: 'My awesome post',
 			body: 'More awesome content'
 		};
-		for (i in 0...105)
-			posts.insert(post);
+		var p = new Array<Dynamic>();
+		for (i in 0...NUM_POSTS)
+			p.push(post);
+		posts.insert(p);
 	}
 
 	public override function tearDown()
@@ -28,7 +30,7 @@ class MongoTest extends TestCase
 
 	public function testCount()
 	{
-		assertTrue(posts.count() == 105);
+		assertTrue(posts.count() == NUM_POSTS);
 	}
 
 	public function testCursor()
@@ -38,24 +40,29 @@ class MongoTest extends TestCase
 		{
 			count += 1;
 		}
-		assertTrue(count == 105);
+		assertTrue(count == NUM_POSTS);
 	}
 
 	public function testData()
 	{
-		for (obj in posts.find())
-		{
-			assertTrue(obj.title == 'My awesome post');
-		}
+		var obj = posts.findOne();
+		assertTrue(obj.title == 'My awesome post');
+	}
+
+	public function testLogin()
+	{
+		//db.addUser("user", "pass");
+		assertTrue(db.login("user", "pass"));
 	}
 
 	public static function main()
 	{
 		var r = new haxe.unit.TestRunner();
-		r.add(new BSONTest());
 		r.add(new MongoTest());
 		r.run();
 	}
+
+	private static inline var NUM_POSTS = 105;
 
 	private var mongo:Mongo;
 	private var db:Database;

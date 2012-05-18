@@ -2,6 +2,7 @@ package org.mongodb;
 
 import haxe.Int32;
 import haxe.Int64;
+import haxe.EnumFlags;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 import haxe.io.Output;
@@ -9,6 +10,14 @@ import haxe.io.Input;
 import org.bsonspec.BSON;
 import sys.net.Socket;
 import sys.net.Host;
+
+enum ReplyFlags
+{
+	CursorNotFound;
+	QueryFailure;
+	ShardConfigStale;
+	AwaitCapable;
+}
 
 class Protocol
 {
@@ -114,6 +123,20 @@ class Protocol
 		request(OP_DELETE, out.getBytes());
 	}
 
+	public static inline function killCursors(cursors:Array<Int64>)
+	{
+		var out:BytesOutput = new BytesOutput();
+		out.writeInt32(Int32.ofInt(0)); // reserved
+		out.writeInt32(Int32.ofInt(cursors.length)); // num of cursors
+		for (cursor in cursors)
+		{
+			out.writeInt32(Int64.getHigh(cursor));
+			out.writeInt32(Int64.getLow(cursor));
+		}
+
+		request(OP_KILL_CURSORS, out.getBytes());
+	}
+
 	public static inline function getOne():Dynamic
 	{
 		var details = read();
@@ -138,16 +161,28 @@ class Protocol
 	private static inline function read():Dynamic
 	{
 		var input = socket.input;
-		return {
+		var details = {
 			length:       input.readInt32(), // length
 			requestId:    input.readInt32(), // request id
 			responseTo:   input.readInt32(), // response to
 			opcode:       input.readInt32(), // opcode
-			flags:        input.readInt32(), // flags
+			flags:        Int32.toNativeInt(input.readInt32()), // flags
 			cursorId:     readInt64(input),
 			startingFrom: input.readInt32(),
 			numReturned:  Int32.toNativeInt(input.readInt32())
 		};
+
+		var flags:EnumFlags<ReplyFlags> = EnumFlags.ofInt(details.flags);
+		if (flags.has(CursorNotFound) && details.numReturned != 0)
+		{
+			throw "Cursor not found";
+		}
+		if (flags.has(QueryFailure))
+		{
+			throw "Query failed";
+		}
+
+		return details;
 	}
 
 	private static inline function readInt64(input:Input):Int64

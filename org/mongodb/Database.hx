@@ -1,5 +1,7 @@
 package org.mongodb;
 
+import haxe.Md5;
+
 class Database implements Dynamic<Collection>
 {
 	public function new(name:String)
@@ -33,22 +35,74 @@ class Database implements Dynamic<Collection>
 		return names;
 	}
 
-	public function createCollection(collection:String):Dynamic
+	/**
+	 * Adds a user to the database
+	 * @param username the name of the user to add/update
+	 * @param password the password to encrypt
+	 */
+	public function addUser(username:String, password:String)
+	{
+		var users = getCollection("system.users");
+
+		var user = users.findOne({user: username});
+		if (user == null)
+		{
+			user =  { user: username, pwd: "" };
+		}
+		user.pwd = Md5.encode(username + ":mongo:" + password);
+
+		trace(user);
+
+		users.insert(user);
+	}
+
+	/**
+	 * Authenticates with the server to gain access to the database
+	 * @param username the user to login
+	 * @param password the password to authenticate with
+	 */
+	public function login(username:String, password:String):Bool
+	{
+		var n = runCommand({getnonce: 1});
+
+		//var a = runCommand({
+		var a = {
+			authenticate: 1,
+			user: username,
+			nonce: n.nonce,
+			key: Md5.encode(n.nonce + username + Md5.encode(username + ":mongo:" + password))
+		};
+		trace(Reflect.fields(a));
+
+		//return (a.ok == 1);
+		return false;
+	}
+
+	/**
+	 * Deauthorizes usage of the database
+	 * Note: other databases may still be authorized
+	 */
+	public inline function logout()
+	{
+		runCommand({logout: 1});
+	}
+
+	public inline function createCollection(collection:String):Dynamic
 	{
 		return runCommand({create: collection});
 	}
 
-	public function dropCollection(collection:String)
+	public inline function dropCollection(collection:String)
 	{
 		runCommand({drop: collection});
 	}
 
-	public function renameCollection(from:String, to:String)
+	public inline function renameCollection(from:String, to:String)
 	{
 		runCommand({renameCollection: from, to: to});
 	}
 
-	public function drop()
+	public inline function drop()
 	{
 		runCommand({dropDatabase: 1});
 	}
