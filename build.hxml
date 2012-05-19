@@ -1,3 +1,9 @@
--neko Test.n
 -cp test
--main MongoTest
+-x MongoTest
+
+#--next
+
+#-neko MongoTest.n
+#-cp test
+#-main MongoTest
+#-D neko-source

@@ -51,8 +51,6 @@ class Database implements Dynamic<Collection>
 		}
 		user.pwd = Md5.encode(username + ":mongo:" + password);
 
-		trace(user);
-
 		users.insert(user);
 	}
 
@@ -65,12 +63,19 @@ class Database implements Dynamic<Collection>
 	{
 		var n = runCommand({getnonce: 1});
 
+#if neko
+		// neko likes to reorder object fields due to hashing
+		// we send the username and password in plain text...
+		// not exactly secure but it works
+		var a = runScript("function() { db.auth('" + username + "', '" + password + "'); }");
+#else
 		var a = runCommand({
 			authenticate: 1,
 			user: username,
 			nonce: n.nonce,
 			key: Md5.encode(n.nonce + username + Md5.encode(username + ":mongo:" + password))
 		});
+#end
 
 		return (a.ok == 1);
 	}
@@ -107,6 +112,11 @@ class Database implements Dynamic<Collection>
 	public inline function runCommand(command:Dynamic):Dynamic
 	{
 		return cmd.findOne(command);
+	}
+
+	public inline function runScript(script:String):Dynamic
+	{
+		return cmd.findOne({eval: script});
 	}
 
 	public var name(default, null):String;
