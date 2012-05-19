@@ -68,6 +68,7 @@ class Database implements Dynamic<Collection>
 		// we send the username and password in plain text...
 		// not exactly secure but it works
 		var a = runScript("function() { db.auth('" + username + "', '" + password + "'); }");
+		trace("Warning: neko authentication is not secure");
 #else
 		var a = runCommand({
 			authenticate: 1,

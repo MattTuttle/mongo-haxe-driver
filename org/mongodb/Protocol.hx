@@ -8,8 +8,12 @@ import haxe.io.BytesOutput;
 import haxe.io.Output;
 import haxe.io.Input;
 import org.bsonspec.BSON;
+#if flash
+import flash.net.Socket;
+#else
 import sys.net.Socket;
 import sys.net.Host;
+#end
 
 enum ReplyFlags
 {
@@ -24,7 +28,12 @@ class Protocol
 	public static function connect(?host:String = "localhost", ?port:Int = 27017)
 	{
 		socket = new Socket();
+#if flash
+		socket.connect(host, port);
+		socket.endian = flash.utils.Endian.LITTLE_ENDIAN;
+#else
 		socket.connect(new Host(host), port);
+#end
 	}
 
 	public static inline function message(msg:String)
@@ -142,7 +151,7 @@ class Protocol
 		var details = read();
 
 		if (details.numReturned == 1)
-			return BSON.decode(socket.input);
+			return BSON.decode(details.input);
 		else
 			return null;
 	}
@@ -153,16 +162,30 @@ class Protocol
 
 		for (i in 0...details.numReturned)
 		{
-			documents.push(BSON.decode(socket.input));
+			documents.push(BSON.decode(details.input));
 		}
 		return details.cursorId;
 	}
 
 	private static inline function read():Dynamic
 	{
-		var input = socket.input;
+		var length:Int = 0, input:Input = null;
+
+#if flash
+		var bytes = new flash.utils.ByteArray();
+		length = socket.readInt();
+		trace(length);
+		socket.readBytes(bytes, 0, length);
+		input = new haxe.io.BytesInput(Bytes.ofData(bytes), 0, length);
+#else
+		length = Int32.toNativeInt(socket.input.readInt32());
+		input = socket.input;
+#end
+
 		var details = {
-			length:       input.readInt32(), // length
+//			length:       input.readInt32(), // length
+			length:       length,
+			input:        input,
 			requestId:    input.readInt32(), // request id
 			responseTo:   input.readInt32(), // response to
 			opcode:       input.readInt32(), // opcode
@@ -198,13 +221,21 @@ class Protocol
 		{
 			throw "Not connected";
 		}
-		var out = socket.output;
+		var out = new BytesOutput();
 		out.writeInt32(Int32.ofInt(data.length + 16)); // include header length
 		out.writeInt32(Int32.ofInt(requestId));
 		out.writeInt32(Int32.ofInt(responseTo));
 		out.writeInt32(Int32.ofInt(opcode));
 		out.writeBytes(data, 0, data.length);
-		out.flush();
+
+		var bytes = out.getBytes();
+#if flash
+		socket.writeBytes(bytes.getData());
+		socket.flush();
+#else
+		socket.output.writeBytes(bytes, 0, bytes.length);
+		socket.output.flush();
+#end
 		return requestId++;
 	}
 

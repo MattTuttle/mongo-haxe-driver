@@ -1,6 +1,13 @@
 -cp test
 -x MongoTest
 
+--next
+
+-cp test
+-main MongoTest
+-swf MongoTest.swf
+-debug
+
 #--next
 
 #-neko MongoTest.n
