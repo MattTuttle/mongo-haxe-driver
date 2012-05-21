@@ -202,6 +202,7 @@ class Protocol
 		}
 		if (flags.has(QueryFailure))
 		{
+			trace(BSON.decode(input));
 			throw "Query failed";
 		}
 

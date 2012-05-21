@@ -2,6 +2,7 @@ package org.bsonspec;
 
 import haxe.Int32;
 import haxe.Int64;
+import haxe.Utf8;
 import haxe.io.Bytes;
 import haxe.io.Input;
 
@@ -32,7 +33,7 @@ class BSONDecoder
 				bytes += 8;
 			case 0x02: // string
 				bytes += Int32.toInt(input.readInt32()) + 4;
-				value = input.readUntil(0x00);
+				value = Utf8.decode(input.readUntil(0x00));
 			case 0x03: // object
 				var len = Int32.toInt(input.readInt32());
 				value = readObject(input, len - 4);
@@ -94,7 +95,11 @@ class BSONDecoder
 				throw "Unknown type " + type;
 		}
 
-		return { key:key, value:value, length:bytes };
+		return {
+			key: Utf8.decode(key),
+			value: value,
+			length: bytes
+		};
 	}
 
 	public function readObject(input:Input, length:Int):Dynamic
@@ -104,12 +109,13 @@ class BSONDecoder
 		{
 			var type:Int = input.readByte();
 			length -= 1;
-			if (type == 0x00) continue; // end of object
+			if (type == 0x00) return object; // end of object
 			var field = readField(type, input);
 
 			Reflect.setField(object, field.key, field.value);
 			length -= field.length;
 		}
+		input.readByte(); // null byte
 		return object;
 	}
 
@@ -120,12 +126,13 @@ class BSONDecoder
 		{
 			var type:Int = input.readByte();
 			length -= 1;
-			if (type == 0x00) continue; // end of array
+			if (type == 0x00) return array; // end of array
 			var field = readField(type, input);
 
 			array.insert(Std.parseInt(field.key), field.value);
 			length -= field.length;
 		}
+		input.readByte(); // null byte
 		return array;
 	}
 

@@ -19,7 +19,12 @@ class MongoTest extends TestCase
 		{
 			data.push({
 				title: 'My awesome post',
-				body: 'More awesome content'
+				body: 'More awesome content',
+//				thing: ['first', 2, Date.now()]
+				// dates: {
+				// 	updated: Date.now(),
+				// 	created: Date.fromString("2012-05-05")
+				// }
 			});
 		}
 		posts.insert(data);
@@ -45,6 +50,18 @@ class MongoTest extends TestCase
 		assertTrue(count == NUM_POSTS);
 	}
 
+	public function testQuery()
+	{
+		/*
+		var result = posts.find({
+			"$query": {
+				title: 'My awesome post'
+			}
+		});
+		*/
+		assertTrue(true);
+	}
+
 	public function testData()
 	{
 		var obj = posts.findOne();
@@ -60,7 +77,10 @@ class MongoTest extends TestCase
 	public static function main()
 	{
 		var r = new haxe.unit.TestRunner();
-		r.add(new MongoTest());
+#if (neko || cpp || php)
+		r.add(new BSONTest());
+#end
+		//r.add(new MongoTest());
 		r.run();
 	}
 

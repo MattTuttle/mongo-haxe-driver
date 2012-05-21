@@ -2,6 +2,7 @@ package org.bsonspec;
 
 import haxe.Int32;
 import haxe.Int64;
+import haxe.Utf8;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
@@ -49,7 +50,7 @@ class BSONEncoder
 		else if (Std.is(value, String))
 		{
 			writeHeader(out, key, 0x02);
-			writeString(out, value);
+			writeString(out, Utf8.encode(value));
 		}
 		else if (Std.is(value, Int))
 		{
@@ -106,10 +107,10 @@ class BSONEncoder
 		out.writeByte(0x00); // terminator
 	}
 
-	private inline function writeHeader(out:BytesOutput, str:String, type:Int)
+	private inline function writeHeader(out:BytesOutput, key:String, type:Int)
 	{
 		out.writeByte(type);
-		out.writeString(str);
+		out.writeString(Utf8.encode(key));
 		out.writeByte(0x00); // terminator
 	}
 
