@@ -60,6 +60,11 @@ class BSONEncoder
 			writeHeader(out, key, 0x01);
 			out.writeDouble(value);
 		}
+		else if (Std.is(value, Date))
+		{
+			writeHeader(out, key, 0x09);
+			out.writeDouble(value.getTime());
+		}
 		else if (Std.is(value, Array))
 		{
 			writeHeader(out, key, 0x04);
