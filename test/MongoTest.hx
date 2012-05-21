@@ -51,7 +51,7 @@ class MongoTest extends TestCase
 
 	public function testLogin()
 	{
-		//db.addUser("user", "pass");
+		db.addUser("user", "pass");
 		assertTrue(db.login("user", "pass"));
 	}
 
@@ -62,7 +62,7 @@ class MongoTest extends TestCase
 		r.run();
 	}
 
-	private static inline var NUM_POSTS = 105;
+	private static inline var NUM_POSTS = 5;
 
 	private var mongo:Mongo;
 	private var db:Database;

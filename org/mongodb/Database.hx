@@ -20,7 +20,7 @@ class Database implements Dynamic<Collection>
 		return getCollection(name);
 	}
 
-	public function getCollectionNames():Array<String>
+	public function listCollections():Array<String>
 	{
 		var collections = getCollection("system.namespaces").find({
 			options: { '$exists': 1 } // find namespaces where options exists
@@ -90,9 +90,10 @@ class Database implements Dynamic<Collection>
 		runCommand({logout: 1});
 	}
 
-	public inline function createCollection(collection:String):Dynamic
+	public inline function createCollection(collection:String):Collection
 	{
-		return runCommand({create: collection});
+		runCommand({create: collection});
+		return getCollection(collection);
 	}
 
 	public inline function dropCollection(collection:String)

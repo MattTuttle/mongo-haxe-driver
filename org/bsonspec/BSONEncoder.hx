@@ -33,7 +33,11 @@ class BSONEncoder
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
 
-		if (Std.is(value, Bool))
+		if (value == null)
+		{
+			writeHeader(out, key, 0x0A);
+		}
+		else if (Std.is(value, Bool))
 		{
 			writeHeader(out, key, 0x08);
 			if (value == true)
@@ -63,7 +67,12 @@ class BSONEncoder
 			out.writeInt32(Int32.ofInt(bytes.length));
 			out.writeBytes(bytes, 0, bytes.length);
 		}
-		else if (Std.is(value, Dynamic) && value != null)
+		else if (Std.is(value, ObjectID))
+		{
+			writeHeader(out, key, 0x07);
+			out.writeBytes(value.bytes, 0, 12);
+		}
+		else if (Std.is(value, Dynamic)) // document/object
 		{
 			writeHeader(out, key, 0x03);
 			bytes = objectToBytes(value);

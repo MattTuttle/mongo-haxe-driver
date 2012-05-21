@@ -44,12 +44,13 @@ class BSONDecoder
 			case 0x05: // binary data
 				var len = Int32.toInt(input.readInt32());
 				var subtype = input.readByte();
+				// TODO: properly handle binary data
 				input.readBytes(value, 0, len);
 				bytes += len + 5;
 			case 0x06: // DBPointer
 				throw "Deprecated: 0x06 undefined";
 			case 0x07: // object id
-				value = input.readString(12);
+				value = new ObjectID(input);
 				bytes += 12;
 			case 0x08: // boolean
 				value = (input.readByte() == 1) ? true : false;
