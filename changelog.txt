@@ -1,1 +1,2 @@
-0.3.0 - Initial Release
+0.7.1 - Fixed object/array encoding, using Utf8
+0.7.0 - Initial Release
