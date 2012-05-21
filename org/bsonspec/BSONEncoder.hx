@@ -77,7 +77,7 @@ class BSONEncoder
 		{
 			writeHeader(out, key, 0x04);
 			bytes = arrayToBytes(value);
-			out.writeInt32(Int32.ofInt(bytes.length));
+			out.writeInt32(Int32.ofInt(bytes.length + 4));
 			out.writeBytes(bytes, 0, bytes.length);
 		}
 		else if (Std.is(value, ObjectID))
@@ -89,7 +89,7 @@ class BSONEncoder
 		{
 			writeHeader(out, key, 0x03);
 			bytes = objectToBytes(value);
-			out.writeInt32(Int32.ofInt(bytes.length));
+			out.writeInt32(Int32.ofInt(bytes.length + 4));
 			out.writeBytes(bytes, 0, bytes.length);
 		}
 		else

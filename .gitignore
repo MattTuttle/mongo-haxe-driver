@@ -1,4 +1,5 @@
 *.n
 *.swf
 *.zip
+*.bson
 .DS_Store
