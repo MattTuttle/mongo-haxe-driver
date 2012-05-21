@@ -8,6 +8,8 @@ import haxe.io.BytesOutput;
 import haxe.io.Output;
 import haxe.io.Input;
 import org.bsonspec.BSON;
+import org.bsonspec.ObjectID;
+
 #if flash
 import flash.net.Socket;
 #else
@@ -80,12 +82,21 @@ class Protocol
 		request(OP_GETMORE, out.getBytes());
 	}
 
-	public static inline function insert(collection:String, fields:Dynamic)
+	public static function insert(collection:String, fields:Dynamic)
 	{
 		var out:BytesOutput = new BytesOutput();
 		out.writeInt32(Int32.ofInt(0)); // TODO: flags
 		out.writeString(collection);
 		out.writeByte(0x00); // string terminator
+
+		// check for _id field, generate if it doesn't exist
+		var writeField = function(field) {
+			if (!Reflect.hasField(field, '_id'))
+			{
+				field._id = new ObjectID();
+			}
+			writeDocument(out, field);
+		};
 
 		// write multiple documents, if an array
 		if (Std.is(fields, Array))
@@ -93,12 +104,12 @@ class Protocol
 			var list = cast(fields, Array<Dynamic>);
 			for (field in list)
 			{
-				writeDocument(out, field);
+				writeField(field);
 			}
 		}
 		else
 		{
-			writeDocument(out, fields);
+			writeField(fields);
 		}
 
 		// write request

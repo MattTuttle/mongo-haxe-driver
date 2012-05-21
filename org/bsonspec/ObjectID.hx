@@ -17,7 +17,7 @@ class ObjectID
 			out.writeInt32(Int32.ofInt(Math.floor(Date.now().getTime() / 1000))); // seconds
 			out.writeBytes(machine, 0, 3); // machine
 			out.writeInt16(Math.floor(32768 * Math.random())); // pid
-			out.writeInt24(sequence++);
+			out.writeInt24(sequence--);
 			bytes = out.getBytes();
 		}
 		else
