@@ -7,7 +7,7 @@ import org.mongodb.Mongo;
 class MongoTest extends TestCase
 {
 
-	public override function setup()
+	public function init()
 	{
 		mongo = new Mongo();
 		db = mongo.blog;
@@ -21,16 +21,16 @@ class MongoTest extends TestCase
 				title: 'My awesome post',
 				body: 'More awesome content',
 				thing: ['first', 5, 25.5],
-				dates: {
+				obj: {
 					updated: Date.now(),
-					created: Date.fromString("2012-05-05")
+					bool: true
 				}
 			});
 		}
 		posts.insert(data);
 	}
 
-	public override function tearDown()
+	public function shutdown()
 	{
 		posts.remove({ title: 'My awesome post' });
 	}
@@ -68,8 +68,12 @@ class MongoTest extends TestCase
 #if (neko || cpp || php)
 		r.add(new BSONTest());
 #end
-		r.add(new MongoTest());
+		var mt = new MongoTest();
+		r.add(mt);
+
+		mt.init();
 		r.run();
+		mt.shutdown();
 	}
 
 	private static inline var NUM_POSTS = 5;
