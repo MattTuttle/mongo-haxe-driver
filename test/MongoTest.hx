@@ -13,14 +13,16 @@ class MongoTest extends TestCase
 		db = mongo.blog;
 		posts = db.posts;
 
-		var post = {
-			title: 'My awesome post',
-			body: 'More awesome content'
-		};
-		var p = new Array<Dynamic>();
+		// push posts into an array
+		var data = new Array<Dynamic>();
 		for (i in 0...NUM_POSTS)
-			p.push(post);
-		posts.insert(p);
+		{
+			data.push({
+				title: 'My awesome post',
+				body: 'More awesome content'
+			});
+		}
+		posts.insert(data);
 	}
 
 	public override function tearDown()

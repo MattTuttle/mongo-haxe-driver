@@ -8,9 +8,8 @@
 -swf MongoTest.swf
 -debug
 
-#--next
+# --next
 
-#-neko MongoTest.n
-#-cp test
-#-main MongoTest
-#-D neko-source
+# -main MongoTest
+# -cp test
+# -cpp MongoTest

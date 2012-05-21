@@ -32,11 +32,7 @@ class Cursor
 	public function hasNext():Bool
 	{
 		// we've depleted the cursor
-		if (finished)
-		{
-			// TODO: remove this cursor?
-			return false;
-		}
+		if (finished) return false;
 
 		if (documents.length > 0)
 		{

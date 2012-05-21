@@ -1,6 +1,7 @@
 package org.bsonspec;
 
 import haxe.Int32;
+import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
@@ -59,6 +60,12 @@ class BSONEncoder
 		{
 			writeHeader(out, key, 0x01);
 			out.writeDouble(value);
+		}
+		else if (Std.is(value, Int64))
+		{
+			writeHeader(out, key, 0x12);
+			out.writeInt32(Int64.getHigh(value));
+			out.writeInt32(Int64.getLow(value));
 		}
 		else if (Std.is(value, Date))
 		{

@@ -65,6 +65,7 @@ class BSONDecoder
 				bytes += pattern.length + 1;
 				value = input.readUntil(0x00);
 				bytes += value.length + 1;
+				// TODO: handle regex somehow
 			case 0x0C: // DBPointer
 				throw "Deprecated: 0x0C DBPointer";
 			case 0x0D: // javascript
@@ -104,7 +105,6 @@ class BSONDecoder
 			var type:Int = input.readByte();
 			length -= 1;
 			if (type == 0x00) continue; // end of object
-//			trace("type: " + type + " length: " + length);
 			var field = readField(type, input);
 
 			Reflect.setField(object, field.key, field.value);
@@ -121,7 +121,6 @@ class BSONDecoder
 			var type:Int = input.readByte();
 			length -= 1;
 			if (type == 0x00) continue; // end of array
-//			trace("type: " + type + " length: " + length);
 			var field = readField(type, input);
 
 			array.insert(Std.parseInt(field.key), field.value);
