@@ -54,3 +54,16 @@ class Main
 	}
 }
 ```
+
+Driver Roadmap
+------------------------------------
+
+Here are the features planned for future versions.
+
+** v0.8 **
+* Indexing capabilities
+* Better error handling
+
+** v0.9 **
+* Replica sets
+* Automatic reconnection
