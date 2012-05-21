@@ -9,6 +9,7 @@ class BSONTest extends TestCase
 	function testEncodeDecode()
 	{
 		var data = {
+			_id: new ObjectID(),
 			title: 'My awesome post',
 			hol: ['first', 2, Date.now()],
 			options: {
@@ -18,16 +19,16 @@ class BSONTest extends TestCase
 					53,
 					{
 						going: 'deeper',
-//						id: new ObjectID("4f7eb8a729a1775cb32d"),
+						mining: -35
 					}
 				]
 			},
 			monkey: null
 		};
-
 		File.saveBytes("test.bson", BSON.encode(data));
 
 		var out = BSON.decode(File.read("test.bson", true));
+
 		assertEquals(Std.string(data), Std.string(out));
 	}
 
