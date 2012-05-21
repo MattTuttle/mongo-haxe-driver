@@ -1,0 +1,16 @@
+<project name="MongoDB" default="all" basedir=".">
+	<description>Builds the MongoDB project</description>
+
+	<target name="haxelib">
+		<zip destfile="mongo.zip">
+			<zipfileset dir="" prefix="mongo" includes="haxelib.xml,changelog.txt,license.txt" />
+			<zipfileset dir="org" prefix="mongo/org" />
+		</zip>
+		<exec executable="haxelib" dir=".">
+			<arg line="test mongo.zip" />
+		</exec>
+	</target>
+
+	<target name="all" depends="haxelib" />
+
+</project>
