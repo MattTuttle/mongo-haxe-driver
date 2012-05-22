@@ -5,7 +5,8 @@
 
 -cp test
 -main MongoTest
--swf MongoTest.swf
+-swf bin/MongoTest.swf
+-swf-version 11
 -debug
 
 # --next

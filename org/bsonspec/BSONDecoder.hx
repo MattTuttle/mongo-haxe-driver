@@ -2,7 +2,6 @@ package org.bsonspec;
 
 import haxe.Int32;
 import haxe.Int64;
-import haxe.Utf8;
 import haxe.io.Bytes;
 import haxe.io.Input;
 
@@ -33,7 +32,7 @@ class BSONDecoder
 				bytes += 8;
 			case 0x02: // string
 				bytes += Int32.toInt(input.readInt32()) + 4;
-				value = Utf8.decode(input.readUntil(0x00));
+				value = input.readUntil(0x00);
 			case 0x03: // object
 				var len = Int32.toInt(input.readInt32());
 				value = readObject(input, len - 4);
@@ -96,7 +95,7 @@ class BSONDecoder
 		}
 
 		return {
-			key: Utf8.decode(key),
+			key: key,
 			value: value,
 			length: bytes
 		};

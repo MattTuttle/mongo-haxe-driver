@@ -20,7 +20,10 @@ class Cursor
 		if (documents.length == 0)
 		{
 			finished = true;
-			Protocol.killCursors([cursorId]);
+			if (cursorId != null)
+			{
+				Protocol.killCursors([cursorId]);
+			}
 			return false;
 		}
 		else

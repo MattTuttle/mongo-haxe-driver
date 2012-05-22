@@ -12,6 +12,9 @@ import org.bsonspec.ObjectID;
 
 #if flash
 import flash.net.Socket;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
+import flash.events.SecurityErrorEvent;
 #else
 import sys.net.Socket;
 import sys.net.Host;
@@ -33,6 +36,13 @@ class Protocol
 #if flash
 		socket.connect(host, port);
 		socket.endian = flash.utils.Endian.LITTLE_ENDIAN;
+
+		socket.addEventListener(IOErrorEvent.IO_ERROR, function(e:Event) {
+				trace(e);
+			}, false, 0, true);
+		socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, function(e:Event) {
+				trace(e);
+			}, false, 0, true);
 #else
 		socket.connect(new Host(host), port);
 #end
@@ -178,14 +188,17 @@ class Protocol
 		return details.cursorId;
 	}
 
-	private static inline function read():Dynamic
+	private static function read():Dynamic
 	{
 		var length:Int = 0, input:Input = null;
 
 #if flash
 		var bytes = new flash.utils.ByteArray();
-		length = socket.readInt();
-		trace(length);
+		try {
+			length = socket.readInt();
+		} catch(e:Dynamic) {
+			return { numReturned: 0 };
+		}
 		socket.readBytes(bytes, 0, length);
 		input = new haxe.io.BytesInput(Bytes.ofData(bytes), 0, length);
 #else

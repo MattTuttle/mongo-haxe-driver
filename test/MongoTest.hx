@@ -1,4 +1,5 @@
 import haxe.unit.TestCase;
+import haxe.Timer;
 import org.mongodb.Collection;
 import org.mongodb.Cursor;
 import org.mongodb.Database;
@@ -7,9 +8,14 @@ import org.mongodb.Mongo;
 class MongoTest extends TestCase
 {
 
+	public function new()
+	{
+		super();
+		mongo = new Mongo();
+	}
+
 	public function init()
 	{
-		mongo = new Mongo();
 		db = mongo.blog;
 		posts = db.posts;
 
@@ -71,9 +77,18 @@ class MongoTest extends TestCase
 		var mt = new MongoTest();
 		r.add(mt);
 
-		mt.init();
-		r.run();
-		mt.shutdown();
+		// flash workaround
+#if flash
+		var timer:Timer = new Timer(1000);
+		timer.run = function() {
+#end
+			mt.init();
+			r.run();
+			mt.shutdown();
+#if flash
+			timer.stop();
+		}
+#end
 	}
 
 	private static inline var NUM_POSTS = 5;

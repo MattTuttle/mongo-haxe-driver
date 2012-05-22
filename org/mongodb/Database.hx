@@ -62,6 +62,7 @@ class Database implements Dynamic<Collection>
 	public function login(username:String, password:String):Bool
 	{
 		var n = runCommand({getnonce: 1});
+		if (n == null) return false; // command failed
 
 #if neko
 		// neko likes to reorder object fields due to hashing
