@@ -65,9 +65,8 @@ class Database implements Dynamic<Collection>
 		if (n == null) return false; // command failed
 
 #if neko
-		// neko likes to reorder object fields due to hashing
-		// we send the username and password in plain text...
-		// not exactly secure but it works
+		// neko likes to reorder object fields due to hashing (patch on google code)
+		// http://code.google.com/p/nekovm/issues/detail?id=11
 		var a = runScript("function() { db.auth('" + username + "', '" + password + "'); }");
 		trace("Warning: neko authentication is not secure");
 #else

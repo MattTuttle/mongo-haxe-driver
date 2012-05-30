@@ -12,12 +12,10 @@ class MongoTest extends TestCase
 	{
 		super();
 		mongo = new Mongo();
-	}
 
-	public function init()
-	{
-		db = mongo.blog;
+		db = mongo.testDriver;
 		posts = db.posts;
+		db.drop(); // clear stuff
 
 		// push posts into an array
 		var data = new Array<Dynamic>();
@@ -25,7 +23,7 @@ class MongoTest extends TestCase
 		{
 			data.push({
 				title: 'My awesome post',
-				body: 'More awesome content',
+				body: 'More awesome content \xc4\x83',
 				thing: ['first', 5, 25.5],
 				obj: {
 					updated: Date.now(),
@@ -34,11 +32,6 @@ class MongoTest extends TestCase
 			});
 		}
 		posts.insert(data);
-	}
-
-	public function shutdown()
-	{
-		posts.remove({ title: 'My awesome post' });
 	}
 
 	public function testCount()
@@ -82,9 +75,7 @@ class MongoTest extends TestCase
 		var timer:Timer = new Timer(1000);
 		timer.run = function() {
 #end
-			mt.init();
 			r.run();
-			mt.shutdown();
 #if flash
 			timer.stop();
 		}
