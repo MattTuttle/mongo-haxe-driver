@@ -26,9 +26,10 @@ class Collection
 		Protocol.insert(fullname, fields);
 	}
 
-	public inline function update(select:Dynamic, fields:Dynamic)
+	public inline function update(select:Dynamic, fields:Dynamic, ?upsert:Bool, ?multi:Bool)
 	{
-		Protocol.update(fullname, select, fields);
+		var flags = 0x0 | (upsert ? 0x1 : 0) | (multi ? 0x10 : 0);
+		Protocol.update(fullname, select, fields, flags);
 	}
 
 	public inline function remove(select:Dynamic)

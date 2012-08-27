@@ -126,13 +126,13 @@ class Protocol
 		request(OP_INSERT, out.getBytes());
 	}
 
-	public static inline function update(collection:String, select:Dynamic, fields:Dynamic)
+	public static inline function update(collection:String, select:Dynamic, fields:Dynamic, flags:Int)
 	{
 		var out:BytesOutput = new BytesOutput();
 		out.writeInt32(Int32.ofInt(0)); // reserved
 		out.writeString(collection);
 		out.writeByte(0x00); // string terminator
-		out.writeInt32(Int32.ofInt(0)); // TODO: flags
+		out.writeInt32(Int32.ofInt(flags));
 
 		writeDocument(out, select);
 		writeDocument(out, fields);
