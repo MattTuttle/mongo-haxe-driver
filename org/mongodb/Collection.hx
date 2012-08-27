@@ -32,7 +32,7 @@ class Collection
 		Protocol.update(fullname, select, fields, flags);
 	}
 
-	public inline function remove(select:Dynamic)
+	public inline function remove(?select:Dynamic)
 	{
 		Protocol.remove(fullname, select);
 	}

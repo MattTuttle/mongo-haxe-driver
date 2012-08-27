@@ -141,14 +141,15 @@ class Protocol
 		request(OP_UPDATE, out.getBytes());
 	}
 
-	public static inline function remove(collection:String, select:Dynamic)
+	public static inline function remove(collection:String, ?select:Dynamic)
 	{
 		var out:BytesOutput = new BytesOutput();
 		out.writeInt32(Int32.ofInt(0)); // reserved
 		out.writeString(collection);
 		out.writeByte(0x00); // string terminator
 		out.writeInt32(Int32.ofInt(0)); // TODO: flags
-		writeDocument(out, select);
+		if (select)
+			writeDocument(out, select);
 
 		request(OP_DELETE, out.getBytes());
 	}
