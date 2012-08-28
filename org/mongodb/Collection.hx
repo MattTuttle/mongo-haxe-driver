@@ -28,7 +28,7 @@ class Collection
 
 	public inline function update(select:Dynamic, fields:Dynamic, ?upsert:Bool, ?multi:Bool)
 	{
-		var flags = 0x0 | (upsert ? 0x1 : 0) | (multi ? 0x10 : 0);
+		var flags = 0x0 | (upsert ? 0x1 : 0) | (multi ? 0x2 : 0);
 		Protocol.update(fullname, select, fields, flags);
 	}
 
