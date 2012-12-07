@@ -41,6 +41,51 @@ class Collection
 	public inline function drop() { db.dropCollection(name); }
 	public inline function rename(to:String) { db.renameCollection(name, to); }
 
+	public function getIndexes():Cursor
+	{
+		Protocol.query(db.name + ".system.indexes", {ns: fullname});
+		return new Cursor(fullname);
+	}
+
+	public function ensureIndex(keyPattern:Dynamic, ?options:Dynamic)
+	{
+		// TODO: remove when name is deprecated
+		var nameList = new List<String>();
+		for (field in Reflect.fields(keyPattern))
+		{
+			nameList.add(field + "_" + Reflect.field(keyPattern, field));
+		}
+		var name = nameList.join("_");
+
+		if (options == null)
+		{
+			options = { name: name, ns: fullname, key: keyPattern };
+		}
+		else
+		{
+			Reflect.setField(options, "name", name);
+			Reflect.setField(options, "ns", fullname);
+			Reflect.setField(options, "key", keyPattern);
+		}
+
+		Protocol.insert(db.name + ".system.indexes", options);
+	}
+
+	public function dropIndexes()
+	{
+		db.runCommand({dropIndexes: name, index: '*'});
+	}
+
+	public function dropIndex(nameOrPattern:Dynamic)
+	{
+		db.runCommand({dropIndexes: name, index: nameOrPattern});
+	}
+
+	public function reIndex()
+	{
+		db.runCommand({reIndex: name});
+	}
+
 	public inline function count():Int
 	{
 		var result = db.runCommand({count: name});
