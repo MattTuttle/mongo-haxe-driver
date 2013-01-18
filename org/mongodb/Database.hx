@@ -78,7 +78,7 @@ class Database implements Dynamic<Collection>
 		});
 #end
 
-		return (a.ok == 1);
+		return (Std.int(a.ok) == 1);
 	}
 
 	/**
