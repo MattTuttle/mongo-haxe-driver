@@ -92,6 +92,15 @@ class Collection
 		return result.n;
 	}
 
+	public inline function distinct(key:String, ?query:Dynamic):Array<Dynamic>
+	{
+		var cmd:{ distinct:String, key:String, ?query:Dynamic } = { distinct: name, key: key };
+		if (query != null)
+			cmd.query = query;
+		var result = db.runCommand(cmd);
+		return result.values;
+	}
+
 	public var fullname(default, null):String;
 	public var name(default, null):String;
 	private var db:Database;
