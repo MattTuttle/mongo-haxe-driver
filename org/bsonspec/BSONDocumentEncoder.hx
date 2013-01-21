@@ -5,17 +5,12 @@ import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
-class BSONEncoder
+class BSONDocumentEncoder
 {
+	private var bytes:Bytes;
 
-	public function new(o:Dynamic)
+	public function new(o:BSONDocument)
 	{
-		// base object must have key/value pairs
-		if (Type.typeof(o) != Type.ValueType.TObject)
-		{
-			throw "Cannot convert a non-object to BSON";
-		}
-
 		var out:BytesOutput = new BytesOutput();
 		bytes = objectToBytes(o);
 		out.writeInt32(Int32.ofInt(bytes.length + 4));
@@ -33,8 +28,6 @@ class BSONEncoder
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
-		
-		key = StringTools.replace( key, "s__", "$" );
 
 		if (value == null)
 		{
@@ -86,7 +79,7 @@ class BSONEncoder
 			writeHeader(out, key, 0x07);
 			out.writeBytes(value.bytes, 0, 12);
 		}
-		else if (Std.is(value, Dynamic)) // document/object
+		else if (Std.is(value, BSONDocument)) // document/object
 		{
 			writeHeader(out, key, 0x03);
 			bytes = objectToBytes(value);
@@ -129,15 +122,15 @@ class BSONEncoder
 		return out.getBytes();
 	}
 
-	private function objectToBytes(o:Dynamic):Bytes
+	private function objectToBytes(o:BSONDocument):Bytes
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
 
 		// TODO: figure out ordering??
-		for ( key in Reflect.fields(o) )
+		for ( key in o.keys() )
 		{
-			var value:Dynamic = Reflect.field(o, key);
+			var value:Dynamic = o.get( key );
 
 			if ( ! Reflect.isFunction(value) )
 			{
@@ -149,6 +142,6 @@ class BSONEncoder
 		return out.getBytes();
 	}
 
-	private var bytes:Bytes;
+	
 
 }
