@@ -55,9 +55,7 @@ class BSONTest extends TestCase
 			.append( "monkey", null )
 			.append( "$in", [1,3] );
 			
-		var docEncoder:BSONDocumentEncoder = new BSONDocumentEncoder( doc );
-		
-		File.saveBytes("test-doc.bson", docEncoder.getBytes() );
+		File.saveBytes("test-doc.bson", BSON.encode( doc ) );
 		
 		var out:Dynamic = BSON.decode(File.read("test.bson", true));
 		

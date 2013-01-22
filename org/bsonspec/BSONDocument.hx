@@ -38,7 +38,20 @@ class BSONDocument
 	
 	public function toString():String
 	{
-		return "";
+		var iterator:Iterator<String> = _keysValues.keys();
+		var s:StringBuf = new StringBuf();
+		s.add( "{" );
+
+		for ( key in iterator )
+		{
+			s.add( " " + key + " => " + _keysValues.get( key ) );
+			
+			if ( iterator.hasNext() ) s.add( "," );
+		}
+		
+		s.add( "}" );
+		
+		return s.toString();
 	}
 	
 }
