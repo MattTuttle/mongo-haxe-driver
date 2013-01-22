@@ -1,7 +1,6 @@
 import haxe.unit.TestCase;
 import org.bsonspec.BSON;
 import org.bsonspec.BSONDocument;
-import org.bsonspec.BSONDocumentEncoder;
 import org.bsonspec.ObjectID;
 import sys.io.File;
 
