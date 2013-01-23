@@ -1,6 +1,7 @@
 package org.mongodb;
 
 import haxe.Md5;
+import org.bsonspec.BSONDocument;
 
 class Database implements Dynamic<Collection>
 {
@@ -64,19 +65,12 @@ class Database implements Dynamic<Collection>
 		var n = runCommand({getnonce: 1});
 		if (n == null) return false; // command failed
 
-#if neko
-		// neko likes to reorder object fields due to hashing (patch on google code)
-		// http://code.google.com/p/nekovm/issues/detail?id=11
-		var a = runScript("function() { db.auth('" + username + "', '" + password + "'); }");
-		trace("Warning: neko authentication is not secure");
-#else
-		var a = runCommand({
-			authenticate: 1,
-			user: username,
-			nonce: n.nonce,
-			key: Md5.encode(n.nonce + username + Md5.encode(username + ":mongo:" + password))
-		});
-#end
+		var a = runCommand(BSONDocument.create()
+			.append('authenticate', 1)
+			.append('user', username)
+			.append('nonce', n.nonce)
+			.append('key', Md5.encode(n.nonce + username + Md5.encode(username + ":mongo:" + password)))
+		);
 
 		return (Std.int(a.ok) == 1);
 	}
