@@ -33,6 +33,8 @@ class BSONEncoder
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
+		
+		trace( "-" + key );
 
 		if (value == null)
 		{
@@ -150,15 +152,15 @@ class BSONEncoder
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
+		
+		trace( "doc" );
 
 		// TODO: figure out ordering??
-		for ( key in o.keys() )
+		for ( node in o.nodes() )
 		{
-			var value:Dynamic = o.get( key );
-
-			if ( ! Reflect.isFunction(value) )
+			if ( ! Reflect.isFunction( node.data ) )
 			{
-				bytes = convertToBytes(key, value);
+				bytes = convertToBytes( node.key, node.data );
 				out.writeBytes(bytes, 0, bytes.length);
 			}
 		}

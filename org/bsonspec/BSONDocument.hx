@@ -23,11 +23,12 @@ package org.bsonspec;
  */
 class BSONDocument
 {
-	private var _keysValues:Hash<Dynamic>;
+	private var _nodes:List<BSONDocumentNode>;
 	
 	public function new() 
 	{
-		_keysValues = new Hash<Dynamic>();
+		
+		_nodes = new List<BSONDocumentNode>();
 	}
 	
 	public static function create():BSONDocument
@@ -37,30 +38,25 @@ class BSONDocument
 	
 	public function append(key:String, value:Dynamic):BSONDocument 
 	{
-		_keysValues.set(key, value);
+		_nodes.add( new BSONDocumentNode( key, value ) ); 
 		
 		return this;
 	}
 	
-	public function keys():Iterator<String>
+	public function nodes():Iterator<BSONDocumentNode>
 	{
-		return _keysValues.keys();
-	}
-	
-	public function get( k:String ):Dynamic 
-	{
-		return _keysValues.get( k );
+		return _nodes.iterator();
 	}
 	
 	public function toString():String
 	{
-		var iterator:Iterator<String> = _keysValues.keys();
+		var iterator:Iterator<BSONDocumentNode> = _nodes.iterator();
 		var s:StringBuf = new StringBuf();
 		s.add( "{" );
 
-		for ( key in iterator )
+		for ( node in iterator )
 		{
-			s.add( " " + key + " => " + _keysValues.get( key ) );
+			s.add( " " + node.key + " : " + node.data );
 			
 			if ( iterator.hasNext() ) s.add( "," );
 		}

@@ -52,15 +52,14 @@ class BSONTest extends TestCase
 					] )
 				)
 			.append( "monkey", null )
-			.append( "$in", [1,3] );
+			.append( "$in", [1, 3] );
 			
 		File.saveBytes("test-doc.bson", BSON.encode( doc ) );
+		File.saveContent("test-doc.txt", doc.toString() );
 		
 		var out:Dynamic = BSON.decode(File.read("test.bson", true));
-		
-		assertEquals( doc.get( "title" ), out.title );
-		
 
+		
 	}
 
 }
