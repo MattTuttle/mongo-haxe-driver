@@ -33,8 +33,6 @@ class BSONEncoder
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
-		
-		trace( "-" + key );
 
 		if (value == null)
 		{
@@ -126,7 +124,7 @@ class BSONEncoder
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
-		
+
 		for (i in 0...a.length)
 		{
 			bytes = convertToBytes(Std.string(i), a[i]);
@@ -147,27 +145,21 @@ class BSONEncoder
 			return dynamicToBytes( o );
 		}
 	}
-	
+
 	private function documentToBytes( o:BSONDocument ):Bytes
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
-		
-		trace( "doc" );
 
-		// TODO: figure out ordering??
 		for ( node in o.nodes() )
 		{
-			if ( ! Reflect.isFunction( node.data ) )
-			{
-				bytes = convertToBytes( node.key, node.data );
-				out.writeBytes(bytes, 0, bytes.length);
-			}
+			bytes = convertToBytes( node.key, node.data );
+			out.writeBytes(bytes, 0, bytes.length);
 		}
 		out.writeByte(0x00); // terminate object
 		return out.getBytes();
 	}
-	
+
 	private function dynamicToBytes(o:Dynamic):Bytes
 	{
 		var out:BytesOutput = new BytesOutput();

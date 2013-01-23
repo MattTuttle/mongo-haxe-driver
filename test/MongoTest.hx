@@ -33,12 +33,12 @@ class MongoTest extends TestCase
 		}
 		posts.insert(data);
 
-		posts.ensureIndex({title: 1}, {unique:true});
-		posts.dropIndexes();
-		for (index in posts.getIndexes())
-		{
-			trace(index);
-		}
+		// posts.ensureIndex({title: 1}, {unique:true});
+		// posts.dropIndexes();
+		// for (index in posts.getIndexes())
+		// {
+		// 	trace(index);
+		// }
 	}
 
 	public function testCount()

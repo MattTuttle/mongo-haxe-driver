@@ -31,10 +31,10 @@ class BSONTest extends TestCase
 		var out = BSON.decode(File.read("test.bson", true));
 
 		File.saveContent("test.txt", Std.string( out ) );
-		
+
 		assertEquals(Std.string(data), Std.string(out));
 	}
-	
+
 	function testBSONDocument()
 	{
 		var doc:BSONDocument = BSONDocument.create()
@@ -44,7 +44,7 @@ class BSONTest extends TestCase
 			.append( "options", BSONDocument.create()
 				.append( "delay", 1.565 )
 				.append( "test", true )
-				.append( "nested", [ 
+				.append( "nested", [
 					53,
 					BSONDocument.create()
 						.append( "going", 'deeper' )
@@ -53,13 +53,11 @@ class BSONTest extends TestCase
 				)
 			.append( "monkey", null )
 			.append( "$in", [1, 3] );
-			
+
 		File.saveBytes("test-doc.bson", BSON.encode( doc ) );
 		File.saveContent("test-doc.txt", doc.toString() );
-		
-		var out:Dynamic = BSON.decode(File.read("test.bson", true));
 
-		
+		var out:Dynamic = BSON.decode(File.read("test.bson", true));
 	}
 
 }
