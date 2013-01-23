@@ -11,7 +11,7 @@ class BSONEncoder
 	public function new(o:Dynamic)
 	{
 		// base object must have key/value pairs
-		if (Type.typeof(o) != Type.ValueType.TObject)
+		if ( !Std.is( o, BSONDocument ) && Type.typeof(o) != Type.ValueType.TObject)
 		{
 			throw "Cannot convert a non-object to BSON";
 		}
@@ -33,6 +33,8 @@ class BSONEncoder
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
+		
+		trace( "-" + key );
 
 		if (value == null)
 		{
@@ -84,6 +86,13 @@ class BSONEncoder
 			writeHeader(out, key, 0x07);
 			out.writeBytes(value.bytes, 0, 12);
 		}
+		else if (Std.is(value, BSONDocument)) // document/object
+		{
+			writeHeader(out, key, 0x03);
+			bytes = documentToBytes(value);
+			out.writeInt32(Int32.ofInt(bytes.length + 4));
+			out.writeBytes(bytes, 0, bytes.length);
+		}
 		else if (Std.is(value, Dynamic)) // document/object
 		{
 			writeHeader(out, key, 0x03);
@@ -117,7 +126,7 @@ class BSONEncoder
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
-
+		
 		for (i in 0...a.length)
 		{
 			bytes = convertToBytes(Std.string(i), a[i]);
@@ -128,6 +137,38 @@ class BSONEncoder
 	}
 
 	private function objectToBytes(o:Dynamic):Bytes
+	{
+		if ( Std.is( o, BSONDocument ) )
+		{
+			return documentToBytes( o );
+		}
+		else
+		{
+			return dynamicToBytes( o );
+		}
+	}
+	
+	private function documentToBytes( o:BSONDocument ):Bytes
+	{
+		var out:BytesOutput = new BytesOutput();
+		var bytes:Bytes;
+		
+		trace( "doc" );
+
+		// TODO: figure out ordering??
+		for ( node in o.nodes() )
+		{
+			if ( ! Reflect.isFunction( node.data ) )
+			{
+				bytes = convertToBytes( node.key, node.data );
+				out.writeBytes(bytes, 0, bytes.length);
+			}
+		}
+		out.writeByte(0x00); // terminate object
+		return out.getBytes();
+	}
+	
+	private function dynamicToBytes(o:Dynamic):Bytes
 	{
 		var out:BytesOutput = new BytesOutput();
 		var bytes:Bytes;
