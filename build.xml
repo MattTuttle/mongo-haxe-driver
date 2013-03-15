@@ -7,7 +7,7 @@
 			<zipfileset dir="org" prefix="mongo/org" />
 		</zip>
 		<exec executable="haxelib" dir=".">
-			<arg line="test mongo.zip" />
+			<arg line="local mongo.zip" />
 		</exec>
 	</target>
 

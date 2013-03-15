@@ -283,11 +283,11 @@ class Protocol
 		return input.readInt32();
 	}
 #else
-	private static inline function writeInt32(out:Output, value:haxe.Int32)
+	private static inline function writeInt32(out:Output, value:Int)
 	{
 		out.writeInt32(haxe.Int32.ofInt(value));
 	}
-	private static inline function readInt32(input:Input):haxe.Int32
+	private static inline function readInt32(input:Input):Int
 	{
 		return haxe.Int32.toNativeInt(input.readInt32());
 	}

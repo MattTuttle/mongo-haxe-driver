@@ -24,7 +24,7 @@ class BSONDecoder
 		return input.readInt32();
 	}
 #else
-	private inline function readInt32(input:Input):haxe.Int32
+	private inline function readInt32(input:Input):Int
 	{
 		return haxe.Int32.toInt(input.readInt32());
 	}
