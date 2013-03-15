@@ -1,6 +1,10 @@
 package org.mongodb;
 
-import haxe.Md5;
+#if haxe3
+	import haxe.crypto.Md5;
+#else
+	import haxe.Md5;
+#end
 import org.bsonspec.BSONDocument;
 
 class Database implements Dynamic<Collection>

@@ -12,12 +12,11 @@ class BSONTest extends TestCase
 		var data = {
 			_id: new ObjectID(),
 			title: 'My awesome post',
-			hol: ['first', 2, Date.now()],
+			hol: [10, 2, 20.5],
 			options: {
 				delay: 1.565,
 				test: true,
 				nested: [
-					53,
 					{
 						going: 'deeper',
 						mining: -35

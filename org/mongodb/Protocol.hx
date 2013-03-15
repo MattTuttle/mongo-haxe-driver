@@ -1,6 +1,5 @@
 package org.mongodb;
 
-import haxe.Int32;
 import haxe.Int64;
 import haxe.EnumFlags;
 import haxe.io.Bytes;
@@ -61,11 +60,11 @@ class Protocol
 	public static inline function query(collection:String, ?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0)
 	{
 		var out:BytesOutput = new BytesOutput();
-		out.writeInt32(Int32.ofInt(0)); // TODO: flags
+		writeInt32(out, 0); // TODO: flags
 		out.writeString(collection);
 		out.writeByte(0x00); // string terminator
-		out.writeInt32(Int32.ofInt(skip));
-		out.writeInt32(Int32.ofInt(number));
+		writeInt32(out, skip);
+		writeInt32(out, number);
 
 		if (query == null) query = {};
 		writeDocument(out, query);
@@ -80,10 +79,10 @@ class Protocol
 	public static inline function getMore(collection:String, cursorId:Int64, number:Int = 0)
 	{
 		var out:BytesOutput = new BytesOutput();
-		out.writeInt32(Int32.ofInt(0)); // reserved
+		writeInt32(out, 0); // reserved
 		out.writeString(collection);
 		out.writeByte(0x00); // string terminator
-		out.writeInt32(Int32.ofInt(number));
+		writeInt32(out, number);
 
 		// write Int64
 		out.writeInt32(Int64.getHigh(cursorId));
@@ -95,7 +94,7 @@ class Protocol
 	public static function insert(collection:String, fields:Dynamic)
 	{
 		var out:BytesOutput = new BytesOutput();
-		out.writeInt32(Int32.ofInt(0)); // TODO: flags
+		writeInt32(out, 0); // TODO: flags
 		out.writeString(collection);
 		out.writeByte(0x00); // string terminator
 
@@ -129,10 +128,10 @@ class Protocol
 	public static inline function update(collection:String, select:Dynamic, fields:Dynamic, flags:Int)
 	{
 		var out:BytesOutput = new BytesOutput();
-		out.writeInt32(Int32.ofInt(0)); // reserved
+		writeInt32(out, 0); // reserved
 		out.writeString(collection);
 		out.writeByte(0x00); // string terminator
-		out.writeInt32(Int32.ofInt(flags));
+		writeInt32(out, flags);
 
 		writeDocument(out, select);
 		writeDocument(out, fields);
@@ -144,10 +143,11 @@ class Protocol
 	public static inline function remove(collection:String, ?select:Dynamic)
 	{
 		var out:BytesOutput = new BytesOutput();
-		out.writeInt32(Int32.ofInt(0)); // reserved
+		writeInt32(out, 0); // reserved
 		out.writeString(collection);
 		out.writeByte(0x00); // string terminator
-		out.writeInt32(Int32.ofInt(0)); // TODO: flags
+		writeInt32(out, 0); // TODO: flags
+
 		if (select)
 			writeDocument(out, select);
 
@@ -157,8 +157,8 @@ class Protocol
 	public static inline function killCursors(cursors:Array<Int64>)
 	{
 		var out:BytesOutput = new BytesOutput();
-		out.writeInt32(Int32.ofInt(0)); // reserved
-		out.writeInt32(Int32.ofInt(cursors.length)); // num of cursors
+		writeInt32(out, 0); // reserved
+		writeInt32(out, cursors.length); // num of cursors
 		for (cursor in cursors)
 		{
 			out.writeInt32(Int64.getHigh(cursor));
@@ -203,7 +203,8 @@ class Protocol
 		socket.readBytes(bytes, 0, length);
 		input = new haxe.io.BytesInput(Bytes.ofData(bytes), 0, length);
 #else
-		length = Int32.toNativeInt(socket.input.readInt32());
+
+		length = readInt32(socket.input);
 		input = socket.input;
 #end
 
@@ -214,10 +215,10 @@ class Protocol
 			requestId:    input.readInt32(), // request id
 			responseTo:   input.readInt32(), // response to
 			opcode:       input.readInt32(), // opcode
-			flags:        Int32.toNativeInt(input.readInt32()), // flags
+			flags:        readInt32(input), // flags
 			cursorId:     readInt64(input),
 			startingFrom: input.readInt32(),
-			numReturned:  Int32.toNativeInt(input.readInt32())
+			numReturned:  readInt32(input)
 		};
 
 		var flags:EnumFlags<ReplyFlags> = EnumFlags.ofInt(details.flags);
@@ -248,10 +249,10 @@ class Protocol
 			throw "Not connected";
 		}
 		var out = new BytesOutput();
-		out.writeInt32(Int32.ofInt(data.length + 16)); // include header length
-		out.writeInt32(Int32.ofInt(requestId));
-		out.writeInt32(Int32.ofInt(responseTo));
-		out.writeInt32(Int32.ofInt(opcode));
+		writeInt32(out, data.length + 16); // include header length
+		writeInt32(out, requestId);
+		writeInt32(out, responseTo);
+		writeInt32(out, opcode);
 		out.writeBytes(data, 0, data.length);
 
 		var bytes = out.getBytes();
@@ -270,6 +271,27 @@ class Protocol
 		var d = BSON.encode(data);
 		out.writeBytes(d, 0, d.length);
 	}
+
+	// Int32 compatibility for Haxe 2.x
+#if haxe3
+	private static inline function writeInt32(out:Output, value:Int)
+	{
+		out.writeInt32(value);
+	}
+	private static inline function readInt32(input:Input):Int
+	{
+		return input.readInt32();
+	}
+#else
+	private static inline function writeInt32(out:Output, value:haxe.Int32)
+	{
+		out.writeInt32(haxe.Int32.ofInt(value));
+	}
+	private static inline function readInt32(input:Input):haxe.Int32
+	{
+		return haxe.Int32.toNativeInt(input.readInt32());
+	}
+#end
 
 	private static var socket:Socket = null;
 	private static var requestId:Int = 0;

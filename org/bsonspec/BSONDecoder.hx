@@ -1,6 +1,5 @@
 package org.bsonspec;
 
-import haxe.Int32;
 import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.Input;
@@ -10,7 +9,7 @@ class BSONDecoder
 
 	public function new(input:Input)
 	{
-		var length = Int32.toInt(input.readInt32());
+		var length = readInt32(input);
 		object = readObject(input, length - 4);
 	}
 
@@ -18,6 +17,18 @@ class BSONDecoder
 	{
 		return object;
 	}
+
+#if haxe3
+	private inline function readInt32(input:Input):Int
+	{
+		return input.readInt32();
+	}
+#else
+	private inline function readInt32(input:Input):haxe.Int32
+	{
+		return haxe.Int32.toInt(input.readInt32());
+	}
+#end
 
 	public function readField(type:Int, input:Input):Dynamic
 	{
@@ -31,18 +42,18 @@ class BSONDecoder
 				value = input.readDouble();
 				bytes += 8;
 			case 0x02: // string
-				bytes += Int32.toInt(input.readInt32()) + 4;
+				bytes += readInt32(input) + 4;
 				value = input.readUntil(0x00);
 			case 0x03: // object
-				var len = Int32.toInt(input.readInt32());
+				var len = readInt32(input);
 				value = readObject(input, len - 4);
 				bytes += len;
 			case 0x04: // array
-				var len = Int32.toInt(input.readInt32());
+				var len = readInt32(input);
 				value = readArray(input, len - 4);
 				bytes += len;
 			case 0x05: // binary data
-				var len = Int32.toInt(input.readInt32());
+				var len = readInt32(input);
 				var subtype = input.readByte();
 				// TODO: properly handle binary data
 				input.readBytes(value, 0, len);
@@ -69,15 +80,15 @@ class BSONDecoder
 			case 0x0C: // DBPointer
 				throw "Deprecated: 0x0C DBPointer";
 			case 0x0D: // javascript
-				bytes += Int32.toInt(input.readInt32()) + 4;
+				bytes += readInt32(input) + 4;
 				value = input.readUntil(0x00);
 			case 0x0E: // symbol
-				bytes += Int32.toInt(input.readInt32()) + 4;
+				bytes += readInt32(input) + 4;
 				value = input.readUntil(0x00);
 			case 0x0F: // code w/ scope
 				throw "Unimplemented: code w/ scope";
 			case 0x10: // integer
-				value = Int32.toInt(input.readInt32());
+				value = readInt32(input);
 				bytes += 4;
 			case 0x11: // timestamp
 				// internal to Mongo

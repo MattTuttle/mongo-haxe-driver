@@ -24,7 +24,7 @@ class MongoTest extends TestCase
 			data.push({
 				title: 'My awesome post',
 				body: 'More awesome content \xc4\x83',
-				thing: ['first', 5, 25.5],
+				thing: [10, 5, 25.5],
 				obj: {
 					updated: Date.now(),
 					bool: true
