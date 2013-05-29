@@ -3,7 +3,7 @@
 
 	<target name="haxelib">
 		<zip destfile="mongo.zip">
-			<zipfileset dir="" prefix="mongo" includes="haxelib.xml,changelog.txt,license.txt" />
+			<zipfileset dir="" prefix="mongo" includes="haxelib.json,changelog.txt,license.txt" />
 			<zipfileset dir="org" prefix="mongo/org" />
 		</zip>
 		<exec executable="haxelib" dir=".">

@@ -1,8 +1,0 @@
-<project name="mongodb" url="http://github.com/MattTuttle/mongo-haxe-driver" license="MIT">
-	<user name="heardtheword" />
-	<tag v="cpp" />
-	<tag v="neko" />
-	<tag v="php" />
-	<description>MongoDB driver for Haxe</description>
-	<version name="0.8.1">See changelog.txt</version>
-</project>
