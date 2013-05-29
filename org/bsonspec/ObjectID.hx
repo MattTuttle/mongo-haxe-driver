@@ -18,9 +18,10 @@ class ObjectID
 #else
 			out.writeInt32(haxe.Int32.ofInt(Math.floor(Date.now().getTime() / 1000))); // seconds
 #end
-			out.writeBytes(machine, 0, 3); // machine
-			out.writeInt16(Math.floor(32768 * Math.random())); // pid
-			out.writeInt24(sequence--);
+			out.writeBytes(machine, 0, 3);
+			out.writeUInt16(pid);
+			out.writeUInt24(sequence++);
+			if (sequence > 0xFFFFFF) sequence = 0;
 			bytes = out.getBytes();
 		}
 		else
@@ -44,5 +45,6 @@ class ObjectID
 #else
 	private static var machine:Bytes = Bytes.ofString("flash");
 #end
+	private static var pid = Std.random(65536);
 
 }
