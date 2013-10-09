@@ -47,6 +47,11 @@ class Protocol
 #end
 	}
 
+	public static function close(){
+		socket.close();
+		socket = null;
+	}
+
 	public static inline function message(msg:String)
 	{
 		throw "deprecated";
