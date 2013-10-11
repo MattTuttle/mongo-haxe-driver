@@ -105,14 +105,14 @@ class BSONEncoder
 		return out.getBytes();
 	}
 
-	private inline function writeString(out:BytesOutput, str:String)
+	private inline function writeString(out:BytesOutput, str:String):Void
 	{
 		out.writeInt32(#if haxe3 str.length + 1 #else haxe.Int32.ofInt(str.length + 1) #end);
 		out.writeString(str);
 		out.writeByte(0x00); // terminator
 	}
 
-	private inline function writeHeader(out:BytesOutput, key:String, type:Int)
+	private inline function writeHeader(out:BytesOutput, key:String, type:Int):Void
 	{
 		out.writeByte(type);
 		out.writeString(key);

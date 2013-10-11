@@ -29,7 +29,7 @@ class Database implements Dynamic<Collection>
 	{
 		var o : Dynamic = { };
 		Reflect.setField( o , "$exists", 1);
-		
+
 		var collections = getCollection("system.namespaces").find({
 			options: o // find namespaces where options exists
 		});
@@ -48,7 +48,7 @@ class Database implements Dynamic<Collection>
 	 * @param username the name of the user to add/update
 	 * @param password the password to encrypt
 	 */
-	public function addUser(username:String, password:String)
+	public function addUser(username:String, password:String):Void
 	{
 		var users = getCollection("system.users");
 
@@ -86,7 +86,7 @@ class Database implements Dynamic<Collection>
 	 * Deauthorizes usage of the database
 	 * Note: other databases may still be authorized
 	 */
-	public inline function logout()
+	public inline function logout():Void
 	{
 		runCommand({logout: 1});
 	}
@@ -97,17 +97,17 @@ class Database implements Dynamic<Collection>
 		return getCollection(collection);
 	}
 
-	public inline function dropCollection(collection:String)
+	public inline function dropCollection(collection:String):Void
 	{
 		runCommand({drop: collection});
 	}
 
-	public inline function renameCollection(from:String, to:String)
+	public inline function renameCollection(from:String, to:String):Void
 	{
 		runCommand({renameCollection: from, to: to});
 	}
 
-	public inline function drop()
+	public inline function drop():Void
 	{
 		runCommand({dropDatabase: 1});
 	}

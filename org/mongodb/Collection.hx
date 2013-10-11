@@ -21,25 +21,25 @@ class Collection
 		return Protocol.getOne();
 	}
 
-	public inline function insert(fields:Dynamic)
+	public inline function insert(fields:Dynamic):Void
 	{
 		Protocol.insert(fullname, fields);
 	}
 
-	public inline function update(select:Dynamic, fields:Dynamic, ?upsert:Bool, ?multi:Bool)
+	public inline function update(select:Dynamic, fields:Dynamic, ?upsert:Bool, ?multi:Bool):Void
 	{
 		var flags = 0x0 | (upsert ? 0x1 : 0) | (multi ? 0x2 : 0);
 		Protocol.update(fullname, select, fields, flags);
 	}
 
-	public inline function remove(?select:Dynamic)
+	public inline function remove(?select:Dynamic):Void
 	{
 		Protocol.remove(fullname, select);
 	}
 
-	public inline function create() { db.createCollection(name); }
-	public inline function drop() { db.dropCollection(name); }
-	public inline function rename(to:String) { db.renameCollection(name, to); }
+	public inline function create():Void { db.createCollection(name); }
+	public inline function drop():Void { db.dropCollection(name); }
+	public inline function rename(to:String):Void { db.renameCollection(name, to); }
 
 	public function getIndexes():Cursor
 	{
@@ -47,7 +47,7 @@ class Collection
 		return new Cursor(fullname);
 	}
 
-	public function ensureIndex(keyPattern:Dynamic, ?options:Dynamic)
+	public function ensureIndex(keyPattern:Dynamic, ?options:Dynamic):Void
 	{
 		// TODO: remove when name is deprecated
 		var nameList = new List<String>();
@@ -71,17 +71,17 @@ class Collection
 		Protocol.insert(db.name + ".system.indexes", options);
 	}
 
-	public function dropIndexes()
+	public function dropIndexes():Void
 	{
 		db.runCommand({dropIndexes: name, index: '*'});
 	}
 
-	public function dropIndex(nameOrPattern:Dynamic)
+	public function dropIndex(nameOrPattern:Dynamic):Void
 	{
 		db.runCommand({dropIndexes: name, index: nameOrPattern});
 	}
 
-	public function reIndex()
+	public function reIndex():Void
 	{
 		db.runCommand({reIndex: name});
 	}
