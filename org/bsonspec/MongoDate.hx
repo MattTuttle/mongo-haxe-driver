@@ -4,7 +4,7 @@ import haxe.Int64;
 using haxe.Int64;
 
 
-class BSONDate
+class MongoDate
 {
   public var utc_ms:Int64;
   public var date:Date;

@@ -69,7 +69,7 @@ class BSONDecoder
 			case 0x09: // utc datetime (int64)
         var d_low = input.readInt32();
         var d_high = input.readInt32();
-        value = new BSONDate(Int64.make(d_high, d_low));
+        value = new MongoDate(Int64.make(d_high, d_low));
 				bytes += 8;
 			case 0x0A: // null
 				value = null;
