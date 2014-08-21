@@ -67,7 +67,9 @@ class BSONDecoder
 				value = (input.readByte() == 1) ? true : false;
 				bytes += 1;
 			case 0x09: // utc datetime (int64)
-				value = Date.fromTime(input.readDouble());
+        var d_low = input.readInt32();
+        var d_high = input.readInt32();
+        value = new MongoDate(Int64.make(d_high, d_low));
 				bytes += 8;
 			case 0x0A: // null
 				value = null;
