@@ -18,4 +18,8 @@ class Mongo implements Dynamic<Database>
 		return getDB(name);
 	}
 
+    public function close() {
+        Protocol.close();
+    }
+
 }
