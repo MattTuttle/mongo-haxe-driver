@@ -10,7 +10,7 @@ class BSONEncoder
 	public function new(o:Dynamic)
 	{
 		// base object must have key/value pairs
-		if ( !Std.is( o, BSONDocument ) && Type.typeof(o) != Type.ValueType.TObject)
+		if ( !Std.is( o, BSONDocument ) && !Type.typeof(o).match(TObject | TClass(_)))
 		{
 			throw "Cannot convert a non-object to BSON";
 		}
