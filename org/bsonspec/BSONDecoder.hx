@@ -150,8 +150,8 @@ class BSONDecoder
 
 	private inline function readInt64(input:Input):Int64
 	{
-		var high = input.readInt32();
 		var low = input.readInt32();
+		var high = input.readInt32();
 		return Int64.make(high, low);
 	}
 

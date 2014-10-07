@@ -1,3 +1,4 @@
+import haxe.Int64;
 import haxe.unit.TestCase;
 import org.bsonspec.BSON;
 import org.bsonspec.BSONDocument;
@@ -13,6 +14,8 @@ class BSONTest extends TestCase
 			_id: new ObjectID(),
 			title: 'My awesome post',
 			hol: [10, 2, 20.5],
+			int64: Int64.ofInt(1),
+			lint64: Int64.make(1<<31, 0),  // smallest int64
 			options: {
 				delay: 1.565,
 				test: true,
@@ -40,6 +43,8 @@ class BSONTest extends TestCase
 			.append( "_id", new ObjectID() )
 			.append( "title", 'My awesome post' )
 			.append( "hol", ['first', 2, Date.now()] )
+			.append( "int64", Int64.ofInt(1) )
+			.append( "lint64", Int64.make(1<<31, 0))  // smallest int64
 			.append( "options", BSONDocument.create()
 				.append( "delay", 1.565 )
 				.append( "test", true )
