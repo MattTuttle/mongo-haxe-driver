@@ -1,48 +1,53 @@
 package org.bsonspec;
 
 import haxe.Int64;
+import UInt;
 using haxe.Int64;
 
+@:forward
+abstract MongoDate(Date) {
 
-class MongoDate
-{
-  public var utc_ms:Int64;
-  public var date:Date;
-  
-  
-  public function new(utc_ms:Int64) 
-  {    
-    this.utc_ms = utc_ms;
-    
-    var low:UInt = utc_ms.getLow();
-    var high:UInt = utc_ms.getHigh();
-    date = Date.fromTime(cast(high, Float) * 4294967296.0 + low);            
-  }
-  
-  public inline function ms():Int
-  {
-    var m = Int64.make(0, 1000);
-    return utc_ms.mod(m).getLow();        
-  }
-  
-  // tz_offset in minutes, e.g. for UTC +02:00 value is -120
-  
-  public function format(?tz_offset:Int):String
-  {
-    if (tz_offset == null)    
-    { 
-      // Haxe currently doesn't support cross platform Date.getTimezoneOffset() function
-      // so we use this snippet, but it's not counting in Daylight Saving Time difference
-
-      var a = DateTools.format(Date.fromTime(0), '%H:%M').split(':');   
-      tz_offset = -Std.parseInt(a[0]) * 60 + Std.parseInt(a[1]);      
+    public inline function new(date:Date)
+    {
+        this = date;
     }
-    
-    return DateTools.format(Date.fromTime(date.getTime() + tz_offset * 60*1000), '%Y-%m-%d %H:%M:%S.' + ms());
-  }
-  
-  public function toString()
-  {
-    return format();
-  }
+
+    @:from public inline static function fromInt64time(ms:Int64):MongoDate
+    {
+        // double = high << 32 + low
+        //    with  a << b = a*(1 << b)
+        return new MongoDate(Date.fromTime(POW32f*ms.getHigh() + unsigned(ms.getLow())));
+    }
+
+    @:to public inline function getTimeInt64():Int64
+    {
+        var t = this.getTime();
+        // compute using only xx bits for each i32 part
+        // to avoid problems with overflow and (TODO) precision
+        var f = t/POWxxf;
+        var high = Std.int(f);
+        var ti = POWxxf*high;
+        var low = Std.int(t - ti);  // remainder
+        // trace('t: $t, f: $f, high: $high, POWxxf*high: $ti, low: $low, lowf: ${t - ti}');
+        // adjust for int32
+        low |= high << xx;
+        high = high >> (32 - xx);
+        // trace('high: $high, low: $low');
+        return Int64.make(high, low);
+    }
+
+    static function unsigned(i:UInt):Float
+    {
+        // conversion peformed by UInt.toFloat()
+        // basically, when negative, return POW32f + i
+        return i;
+    }
+
+    static var xx = 31;
+    static var POWxxf = Math.pow(2, xx);
+    static var POW32f = Math.pow(2, 32);
+
 }
+
+// random note: 1 << 32 = u0xffffffff + 1 = 4294967296
+
