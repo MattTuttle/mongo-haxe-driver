@@ -67,10 +67,9 @@ class BSONDecoder
 				value = (input.readByte() == 1) ? true : false;
 				bytes += 1;
 			case 0x09: // utc datetime (int64)
-        var d_low = input.readInt32();
-        var d_high = input.readInt32();
-        value = new MongoDate(Int64.make(d_high, d_low));
+				var date = (readInt64(input) : MongoDate);
 				bytes += 8;
+				value = date;
 			case 0x0A: // null
 				value = null;
 			case 0x0B: // regular expression
