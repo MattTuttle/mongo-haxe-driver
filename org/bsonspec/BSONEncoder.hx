@@ -63,8 +63,8 @@ class BSONEncoder
 		else if (Std.is(value, Int64))
 		{
 			writeHeader(out, key, 0x12);
-			out.writeInt32(Int64.getHigh(value));
 			out.writeInt32(Int64.getLow(value));
+			out.writeInt32(Int64.getHigh(value));
 		}
 		else if (Std.is(value, Date))
 		{
