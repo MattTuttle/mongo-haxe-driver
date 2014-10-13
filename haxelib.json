@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": ["database", "cpp", "neko", "php"],
 	"description": "MongoDB driver for Haxe",
-	"version": "0.8.2",
+	"version": "0.8.3",
 	"releasenote": "See changelog.txt",
 	"contributors": ["heardtheword"]
 }
