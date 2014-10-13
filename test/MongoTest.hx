@@ -28,7 +28,9 @@ class MongoTest extends TestCase
 				obj: {
 					updated: Date.now(),
 					bool: true
-				}
+				},
+                setDate: Date.fromTime(1e10),
+                postDate: Date.now()
 			});
 		}
 		posts.insert(data);
@@ -60,6 +62,7 @@ class MongoTest extends TestCase
 	{
 		var obj = posts.findOne();
 		assertTrue(obj.title == 'My awesome post');
+        assertEquals(obj.setDate.getTime(), 1e10);
 	}
 
 	public function testLogin()
