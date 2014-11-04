@@ -103,6 +103,10 @@ class MongoTest extends TestCase
 #end
 		r.add(new MongoTest());
 
+		var qt = new QueryTest();
+		r.add(qt);
+
+		// flash workaround
 #if flash
 		var timer:Timer = new Timer(1000);
 		timer.run = function() {
