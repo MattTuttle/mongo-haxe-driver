@@ -57,6 +57,11 @@ class Cursor
 		return documents.shift();
 	}
 
+	public function iterator():Iterator<Dynamic>
+	{
+		return this;
+	}
+
 	private var collection:String;
 	private var cursorId:Int64;
 	private var documents:Array<Dynamic>;
