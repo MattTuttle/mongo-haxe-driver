@@ -12,8 +12,7 @@ class Collection
 
 	public inline function find(?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0):Cursor
 	{
-		cnx.query(fullname, query, returnFields, skip, number);
-		return new Cursor(this);
+		return new Cursor(this, query, returnFields, skip, number);
 	}
 
 	public inline function findOne(?query:Dynamic, ?returnFields:Dynamic):Dynamic
@@ -44,8 +43,7 @@ class Collection
 
 	public function getIndexes():Cursor
 	{
-		cnx.query(db.name + ".system.indexes", {ns: fullname});
-		return new Cursor(this);
+		return new Cursor(db.getCollection("system.indexes"), { ns : fullname }, null, 0, 0);
 	}
 
 	public function ensureIndex(keyPattern:Dynamic, ?options:Dynamic):Void

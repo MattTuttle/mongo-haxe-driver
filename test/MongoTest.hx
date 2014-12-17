@@ -29,8 +29,9 @@ class MongoTest extends TestCase
 					updated: Date.now(),
 					bool: true
 				},
-                setDate: Date.fromTime(1e10),
-                postDate: Date.now()
+				setDate: Date.fromTime(1e10),
+				postDate: Date.now(),
+				seq: i
 			});
 		}
 		posts.insert(data);
@@ -62,13 +63,25 @@ class MongoTest extends TestCase
 	{
 		var obj = posts.findOne();
 		assertTrue(obj.title == 'My awesome post');
-        assertEquals(obj.setDate.getTime(), 1e10);
+		assertEquals(obj.setDate.getTime(), 1e10);
 	}
 
 	public function testLogin()
 	{
 		db.addUser("user", "pass");
 		assertTrue(db.login("user", "pass"));
+	}
+
+	public function testReturnOpts()
+	{
+		assertEquals(NUM_POSTS, posts.find(null, null, 0, 2).toArray().length);
+	}
+
+        public function testCursorMethods()
+        {
+		assertEquals(NUM_POSTS - 2, posts.find().skip(2).toArray().length);
+		assertEquals(NUM_POSTS - 2, posts.find().limit(NUM_POSTS - 2).toArray().length);
+		assertEquals(NUM_POSTS - 1, posts.find().sort({ seq : -1 }).limit(1).toArray()[0].seq);
 	}
 
 	public static function main()
