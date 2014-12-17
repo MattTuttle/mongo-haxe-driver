@@ -74,21 +74,24 @@ class MongoTest extends TestCase
 	public static function main()
 	{
 		var r = new haxe.unit.TestRunner();
-#if (neko || cpp || php)
+
+#if (!flash)
 		r.add(new BSONTest());
 #end
-		var mt = new MongoTest();
-		r.add(mt);
+		r.add(new MongoTest());
 
-		// flash workaround
 #if flash
 		var timer:Timer = new Timer(1000);
 		timer.run = function() {
-#end
 			r.run();
-#if flash
 			timer.stop();
 		}
+#else
+		r.run();
+#end
+
+#if sys
+		Sys.exit(r.result.success ? 0 : 1);
 #end
 	}
 
