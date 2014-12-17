@@ -1,0 +1,33 @@
+# example travis.yml haxe configuration
+language: c # change this to objective-c to test on a mac machine
+
+services:
+    - mongodb
+
+env:
+  matrix:
+    - TARGET=neko
+    - TARGET=cpp
+    - TARGET=java
+    # - TARGET=swf
+    # - TARGET=as3
+    # - TARGET=cs
+    # - TARGET=python
+
+matrix:
+  fast_finish: true
+  allow_failures:
+
+before_install: # clone travis-hx repo
+  - travis_retry git clone --depth=50 --branch=master git://github.com/jonasmalacofilho/travis-hx.git ~/travis-hx
+
+install: # setup the target
+  - ~/travis-hx/setup.sh
+
+script:
+  - cd $TRAVIS_BUILD_DIR
+  # build the target. This will call haxe with the HXFLAGS and HXFLAGS_EXTRA environment variables
+  - HXFLAGS="-cp test -main MongoTest" ~/travis-hx/build.sh
+  # run the tests
+  - ~/travis-hx/runtests.sh $FILENAME # this will set the $FILENAME defined on the environment variable to run the tests
+
