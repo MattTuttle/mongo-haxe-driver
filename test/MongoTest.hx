@@ -75,6 +75,10 @@ class MongoTest extends TestCase
 	public function testReturnOpts()
 	{
 		assertEquals(NUM_POSTS, posts.find(null, null, 0, 2).toArray().length);
+		// however:
+		//     If numberToReturn is 1 the server will treat it as -1 (closing the cursor automatically).
+		//     —MongoDB Wire Protocol
+		assertEquals(1, posts.find(null, null, 0, 1).toArray().length);
 	}
 
         public function testCursorMethods()
