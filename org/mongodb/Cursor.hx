@@ -4,10 +4,10 @@ import haxe.Int64;
 
 class Cursor
 {
-
-	public function new(collection:String)
+	public function new(collection:Collection)
 	{
 		this.collection = collection;
+		this.cnx = collection.db.mongo.cnx;
 		this.finished = false;
 		this.documents = new Array<Dynamic>();
 
@@ -16,13 +16,13 @@ class Cursor
 
 	private inline function checkResponse():Bool
 	{
-		cursorId = Protocol.response(documents);
+		cursorId = cnx.response(documents);
 		if (documents.length == 0)
 		{
 			finished = true;
 			if (cursorId != null)
 			{
-				Protocol.killCursors([cursorId]);
+				cnx.killCursors([cursorId]);
 			}
 			return false;
 		}
@@ -43,7 +43,7 @@ class Cursor
 		}
 		else
 		{
-			Protocol.getMore(collection, cursorId);
+			cnx.getMore(collection.fullname, cursorId);
 			if (checkResponse())
 			{
 				return true;
@@ -57,9 +57,10 @@ class Cursor
 		return documents.shift();
 	}
 
-	private var collection:String;
+	private var collection(default, null):Collection;
+	private var cnx:Protocol;
 	private var cursorId:Int64;
 	private var documents:Array<Dynamic>;
 	private var finished:Bool;
-
 }
+

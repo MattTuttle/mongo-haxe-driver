@@ -29,8 +29,23 @@ enum ReplyFlags
 
 class Protocol
 {
-	public static function connect(?host:String = "localhost", ?port:Int = 27017):Void
+	public static function open(?host:String = "localhost", ?port:Int = 27017):Protocol
 	{
+		var cnx = new Protocol();
+		cnx.connect(host, port);
+		return cnx;
+	}
+
+	public function new()
+	{
+
+	}
+
+	public function connect(?host:String = "localhost", ?port:Int = 27017):Void
+	{
+		if (socket != null)
+			throw "Can't reuse this connection";
+
 		socket = new Socket();
 #if flash
 		socket.connect(host, port);
@@ -47,13 +62,13 @@ class Protocol
 #end
 	}
 
-	public static function close():Void
+	public function close():Void
 	{
 		socket.close();
 		socket = null;
 	}
 
-	public static inline function message(msg:String):Void
+	public inline function message(msg:String):Void
 	{
 		throw "deprecated";
 		var out:BytesOutput = new BytesOutput();
@@ -63,7 +78,7 @@ class Protocol
 		request(OP_MSG, out.getBytes());
 	}
 
-	public static inline function query(collection:String, ?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0):Void
+	public inline function query(collection:String, ?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0):Void
 	{
 		var out:BytesOutput = new BytesOutput();
 		writeInt32(out, 0); // TODO: flags
@@ -82,7 +97,7 @@ class Protocol
 		request(OP_QUERY, out.getBytes());
 	}
 
-	public static inline function getMore(collection:String, cursorId:Int64, number:Int = 0):Void
+	public inline function getMore(collection:String, cursorId:Int64, number:Int = 0):Void
 	{
 		var out:BytesOutput = new BytesOutput();
 		writeInt32(out, 0); // reserved
@@ -97,7 +112,7 @@ class Protocol
 		request(OP_GETMORE, out.getBytes());
 	}
 
-	public static function insert(collection:String, fields:Dynamic):Void
+	public function insert(collection:String, fields:Dynamic):Void
 	{
 		var out:BytesOutput = new BytesOutput();
 		writeInt32(out, 0); // TODO: flags
@@ -131,7 +146,7 @@ class Protocol
 		request(OP_INSERT, out.getBytes());
 	}
 
-	public static inline function update(collection:String, select:Dynamic, fields:Dynamic, flags:Int):Void
+	public inline function update(collection:String, select:Dynamic, fields:Dynamic, flags:Int):Void
 	{
 		var out:BytesOutput = new BytesOutput();
 		writeInt32(out, 0); // reserved
@@ -146,7 +161,7 @@ class Protocol
 		request(OP_UPDATE, out.getBytes());
 	}
 
-	public static inline function remove(collection:String, ?select:Dynamic):Void
+	public inline function remove(collection:String, ?select:Dynamic):Void
 	{
 		var out:BytesOutput = new BytesOutput();
 		writeInt32(out, 0); // reserved
@@ -160,7 +175,7 @@ class Protocol
 		request(OP_DELETE, out.getBytes());
 	}
 
-	public static inline function killCursors(cursors:Array<Int64>):Void
+	public inline function killCursors(cursors:Array<Int64>):Void
 	{
 		var out:BytesOutput = new BytesOutput();
 		writeInt32(out, 0); // reserved
@@ -174,7 +189,7 @@ class Protocol
 		request(OP_KILL_CURSORS, out.getBytes());
 	}
 
-	public static inline function getOne():Dynamic
+	public inline function getOne():Dynamic
 	{
 		var details = read();
 
@@ -184,7 +199,7 @@ class Protocol
 			return null;
 	}
 
-	public static inline function response(documents:Array<Dynamic>):Int64
+	public inline function response(documents:Array<Dynamic>):Int64
 	{
 		var details = read();
 
@@ -195,7 +210,7 @@ class Protocol
 		return details.cursorId;
 	}
 
-	private static function read():Dynamic
+	private function read():Dynamic
 	{
 		var length:Int = 0, input:Input = null;
 
@@ -241,14 +256,14 @@ class Protocol
 		return details;
 	}
 
-	private static inline function readInt64(input:Input):Int64
+	private inline function readInt64(input:Input):Int64
 	{
 		var high = input.readInt32();
 		var low = input.readInt32();
 		return Int64.make(high, low);
 	}
 
-	private static inline function request(opcode:Int, data:Bytes, ?responseTo:Int = 0):Int
+	private inline function request(opcode:Int, data:Bytes, ?responseTo:Int = 0):Int
 	{
 		if (socket == null)
 		{
@@ -272,7 +287,7 @@ class Protocol
 		return requestId++;
 	}
 
-	private static inline function writeDocument(out:BytesOutput, data:Dynamic):Void
+	private inline function writeDocument(out:BytesOutput, data:Dynamic):Void
 	{
 		var d = BSON.encode(data);
 		out.writeBytes(d, 0, d.length);
@@ -280,27 +295,27 @@ class Protocol
 
 	// Int32 compatibility for Haxe 2.x
 #if haxe3
-	private static inline function writeInt32(out:Output, value:Int):Void
+	private inline function writeInt32(out:Output, value:Int):Void
 	{
 		out.writeInt32(value);
 	}
-	private static inline function readInt32(input:Input):Int
+	private inline function readInt32(input:Input):Int
 	{
 		return input.readInt32();
 	}
 #else
-	private static inline function writeInt32(out:Output, value:Int):Void
+	private inline function writeInt32(out:Output, value:Int):Void
 	{
 		out.writeInt32(haxe.Int32.ofInt(value));
 	}
-	private static inline function readInt32(input:Input):Int
+	private inline function readInt32(input:Input):Int
 	{
 		return haxe.Int32.toNativeInt(input.readInt32());
 	}
 #end
 
-	private static var socket:Socket = null;
-	private static var requestId:Int = 0;
+	private var socket:Socket = null;
+	private var requestId:Int = 0;  // FIXME
 
 	private inline static var OP_REPLY        = 1; // used by server
 	private inline static var OP_MSG          = 1000; // not used
@@ -311,3 +326,4 @@ class Protocol
 	private inline static var OP_DELETE       = 2006;
 	private inline static var OP_KILL_CURSORS = 2007;
 }
+
