@@ -9,9 +9,10 @@ import org.bsonspec.BSONDocument;
 
 class Database implements Dynamic<Collection>
 {
-	public function new(name:String)
+	public function new(name:String, mongo:Mongo)
 	{
 		this.name = name;
+		this.mongo = mongo;
 		this.cmd = new Collection("$cmd", this);
 	}
 
@@ -123,5 +124,7 @@ class Database implements Dynamic<Collection>
 	}
 
 	public var name(default, null):String;
+	public var mongo(default, null):Mongo;
 	private var cmd:Collection;
 }
+

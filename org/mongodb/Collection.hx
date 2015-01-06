@@ -7,34 +7,34 @@ class Collection
 		this.name = name;
 		this.fullname = db.name + "." + name;
 		this.db = db;
+		this.cnx = db.mongo.cnx;
 	}
 
 	public inline function find(?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0):Cursor
 	{
-		Protocol.query(fullname, query, returnFields, skip, number);
-		return new Cursor(fullname);
+		return new Cursor(this, query, returnFields, skip, number);
 	}
 
 	public inline function findOne(?query:Dynamic, ?returnFields:Dynamic):Dynamic
 	{
-		Protocol.query(fullname, query, returnFields, 0, -1);
-		return Protocol.getOne();
+		cnx.query(fullname, query, returnFields, 0, -1);
+		return cnx.getOne();
 	}
 
 	public inline function insert(fields:Dynamic):Void
 	{
-		Protocol.insert(fullname, fields);
+		cnx.insert(fullname, fields);
 	}
 
 	public inline function update(select:Dynamic, fields:Dynamic, ?upsert:Bool, ?multi:Bool):Void
 	{
 		var flags = 0x0 | (upsert ? 0x1 : 0) | (multi ? 0x2 : 0);
-		Protocol.update(fullname, select, fields, flags);
+		cnx.update(fullname, select, fields, flags);
 	}
 
 	public inline function remove(?select:Dynamic):Void
 	{
-		Protocol.remove(fullname, select);
+		cnx.remove(fullname, select);
 	}
 
 	public inline function create():Void { db.createCollection(name); }
@@ -43,8 +43,7 @@ class Collection
 
 	public function getIndexes():Cursor
 	{
-		Protocol.query(db.name + ".system.indexes", {ns: fullname});
-		return new Cursor(fullname);
+		return new Cursor(db.getCollection("system.indexes"), { ns : fullname }, null, 0, 0);
 	}
 
 	public function ensureIndex(keyPattern:Dynamic, ?options:Dynamic):Void
@@ -68,7 +67,7 @@ class Collection
 			Reflect.setField(options, "key", keyPattern);
 		}
 
-		Protocol.insert(db.name + ".system.indexes", options);
+		cnx.insert(db.name + ".system.indexes", options);
 	}
 
 	public function dropIndexes():Void
@@ -103,6 +102,7 @@ class Collection
 
 	public var fullname(default, null):String;
 	public var name(default, null):String;
-	private var db:Database;
-
+	public var db(default, null):Database;
+	private var cnx:Protocol;
 }
+
