@@ -58,6 +58,12 @@ class MongoTest extends TestCase
 		assertTrue(count == NUM_POSTS);
 	}
 
+	public function testIterable()
+	{
+		var count = Lambda.fold(posts.find(), function (_, cnt) return cnt+1, 0);
+		assertEquals(NUM_POSTS, count);
+	}
+
 	public function testData()
 	{
 		var obj = posts.findOne();
