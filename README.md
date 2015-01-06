@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MattTuttle/mongo-haxe-driver.svg?branch=master)](https://travis-ci.org/jonasmalacofilho/mongo-haxe-driver)
+[![Build Status](https://travis-ci.org/MattTuttle/mongo-haxe-driver.svg?branch=master)](https://travis-ci.org/MattTuttle/mongo-haxe-driver)
 
 MongoDB driver for Haxe
 ====================================
