@@ -18,7 +18,7 @@ matrix:
     - env: TARGET=java
 
 before_install: # clone travis-hx repo
-  - travis_retry git clone --depth=50 --branch=master git://github.com/MattTuttle/travis-hx.git ~/travis-hx
+  - travis_retry git clone --depth=50 --branch=master git://github.com/jonasmalacofilho/travis-hx.git ~/travis-hx
 
 install: # setup the target
   - ~/travis-hx/setup.sh
