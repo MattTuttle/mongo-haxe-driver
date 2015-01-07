@@ -14,7 +14,6 @@ env:
 matrix:
   fast_finish: true
   allow_failures:
-    - env: TARGET=cpp
     - env: TARGET=java
 
 before_install: # clone travis-hx repo

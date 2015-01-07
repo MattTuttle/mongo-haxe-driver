@@ -1,5 +1,4 @@
 import haxe.Int64;
-import haxe.unit.TestCase;
 import org.bsonspec.BSON;
 import org.bsonspec.BSONDocument;
 import org.bsonspec.MongoDate;
@@ -37,7 +36,7 @@ class BSONTest extends TestCase
 
 		File.saveContent("test.txt", Std.string( out ) );
 
-		assertEquals(Std.string(data), Std.string(out));
+		assertSame(data, out);
 	}
 
 	function testBSONDocument()
