@@ -106,8 +106,8 @@ class Protocol
 		writeInt32(out, number);
 
 		// write Int64
-		out.writeInt32(Int64.getHigh(cursorId));
 		out.writeInt32(Int64.getLow(cursorId));
+		out.writeInt32(Int64.getHigh(cursorId));
 
 		request(OP_GETMORE, out.getBytes());
 	}
@@ -258,8 +258,8 @@ class Protocol
 
 	private inline function readInt64(input:Input):Int64
 	{
-		var high = input.readInt32();
 		var low = input.readInt32();
+		var high = input.readInt32();
 		return Int64.make(high, low);
 	}
 
