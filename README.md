@@ -62,6 +62,5 @@ Driver Roadmap
 
 Here are the features planned for future versions.
 
-** v0.9 **
 * Replica sets
 * Automatic reconnection
