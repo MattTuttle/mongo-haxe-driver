@@ -69,7 +69,7 @@ class MongoTest extends TestCase
 	{
 		var obj = posts.findOne();
 		assertTrue(obj.title == 'My awesome post');
-		assertEquals(obj.setDate.getTime(), 1e10);
+		assertEquals(( obj.setDate:Date ).getTime(), 1e10);
 	}
 
 	public function testLogin()

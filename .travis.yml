@@ -14,7 +14,6 @@ env:
 matrix:
   fast_finish: true
   allow_failures:
-    - env: TARGET=java
 
 before_install: # clone travis-hx repo
   - travis_retry git clone --depth=50 --branch=master git://github.com/jonasmalacofilho/travis-hx.git ~/travis-hx

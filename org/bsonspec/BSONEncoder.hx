@@ -109,8 +109,9 @@ class BSONEncoder
 
 	private inline function writeString(out:BytesOutput, str:String):Void
 	{
-		out.writeInt32(#if haxe3 str.length + 1 #else haxe.Int32.ofInt(str.length + 1) #end);
-		out.writeString(str);
+		var bytes = Bytes.ofString(str);
+		out.writeInt32(#if haxe3 bytes.length + 1 #else haxe.Int32.ofInt(bytes.length + 1) #end);
+		out.writeBytes(bytes, 0, bytes.length);
 		out.writeByte(0x00); // terminator
 	}
 
