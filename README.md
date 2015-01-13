@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MattTuttle/mongo-haxe-driver.svg?branch=master)](https://travis-ci.org/MattTuttle/mongo-haxe-driver)
+[![Build Status](https://img.shields.io/travis/MattTuttle/mongo-haxe-driver.svg?style=flat)](https://travis-ci.org/MattTuttle/mongo-haxe-driver) [![Haxelib]( 	https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](license.txt) [![Haxelib]( 	https://img.shields.io/github/tag/MattTuttle/mongo-haxe-driver.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/mongodb)
 
 MongoDB driver for Haxe
 ====================================
