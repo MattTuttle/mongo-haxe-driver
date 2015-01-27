@@ -10,7 +10,7 @@ class Collection
 		this.cnx = db.mongo.cnx;
 	}
 
-	public inline function find(?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0):Cursor
+	public inline function find(?query:Dynamic, ?returnFields:Dynamic, skip:Int = 0, number:Int = 0):Cursor<Dynamic>
 	{
 		return new Cursor(this, query, returnFields, skip, number);
 	}
@@ -41,7 +41,7 @@ class Collection
 	public inline function drop():Void { db.dropCollection(name); }
 	public inline function rename(to:String):Void { db.renameCollection(name, to); }
 
-	public function getIndexes():Cursor
+	public function getIndexes():Cursor<Dynamic>
 	{
 		return new Cursor(db.getCollection("system.indexes"), { ns : fullname }, null, 0, 0);
 	}
