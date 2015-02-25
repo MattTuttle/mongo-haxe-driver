@@ -50,15 +50,22 @@ class BSONEncoder
 			writeHeader(out, key, 0x02);
 			writeString(out, value);
 		}
-		else if (Std.is(value, Float))
+		else if (Std.is(value, haxe.io.Bytes))
 		{
-			writeHeader(out, key, 0x01);
-			out.writeDouble(value);
+			writeHeader(out, key, 0x05);
+			out.writeInt32(value.length);
+			out.writeByte(0x00); // generic
+			out.writeBytes(value, 0, value.length);
 		}
 		else if (Std.is(value, Int))
 		{
 			writeHeader(out, key, 0x10);
 			out.writeInt32(#if haxe3 value #else haxe.Int32.ofInt(value) #end);
+		}
+		else if (Std.is(value, Float))
+		{
+			writeHeader(out, key, 0x01);
+			out.writeDouble(value);
 		}
 		else if (Std.is(value, Int64))
 		{
