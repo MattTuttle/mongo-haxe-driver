@@ -39,6 +39,12 @@ class ObjectID
 		return 'ObjectID("' + bytes.toHex() + '")';
 	}
 
+	public function getDate():Date
+	{
+		return Date.fromTime( (bytes.get(3) | (bytes.get(2) << 8) | (bytes.get(1) << 16) | (bytes.get(0) << 24)) * 1000.0 );
+	}
+
+	
 	public var bytes(default, null):Bytes;
 	private static var sequence:Int = Std.random(0x1000000);
 
