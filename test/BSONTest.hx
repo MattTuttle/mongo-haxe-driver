@@ -28,15 +28,31 @@ class BSONTest extends TestCase
 				]
 			},
 			date: Date.now(),
-			monkey: null
+			int: 2147483647,
+			float: 2147483647.0,
+			monkey: null,
+			bool: true
 		};
+		
+		#if sys
 		File.saveBytes("test.bson", BSON.encode(data));
 
 		var out = BSON.decode(File.read("test.bson", true));
 
 		File.saveContent("test.txt", Std.string( out ) );
-
+		#else
+		var out = BSON.decode(new haxe.io.BytesInput(BSON.encode(data)));
+		#end
+		
 		assertSame(data, out);
+		
+		// overflow (-2)
+		assertSame(data.int + data.int, out.int + out.int);
+		
+		// no overflow
+		assertSame(data.float + data.float, out.float + out.float);
+		
+		assertSame(data._id.getDate(),  out._id.getDate());
 	}
 
 	function testBSONDocument()
