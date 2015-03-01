@@ -50,52 +50,45 @@ class BSONEncoder
 				writeHeader(out, key, 0x08);
 				out.writeByte( value ? 0x01 : 0x00 );
 			
+			case TClass(String):
+				writeHeader(out, key, 0x02);
+				writeString(out, value);
+			
+			case TClass(Bytes):
+				writeHeader(out, key, 0x05);
+				out.writeInt32(value.length);
+				out.writeByte(0x00); // generic
+				out.writeBytes(value, 0, value.length);
+			
+			case TClass(Int64):
+				writeHeader(out, key, 0x12);
+				out.writeInt32(Int64.getLow(value));
+				out.writeInt32(Int64.getHigh(value));
+			
+			case TClass(Date):
+				var d64 = (value : MongoDate).getTimeInt64();
+				writeHeader(out, key, 0x09);
+				out.writeInt32(Int64.getLow(d64));
+				out.writeInt32(Int64.getHigh(d64));
+			
+			case TClass(Array):
+				writeHeader(out, key, 0x04);
+				bytes = arrayToBytes(value);
+				out.writeInt32(#if haxe3 bytes.length + 4 #else haxe.Int32.ofInt(bytes.length + 4) #end);
+				out.writeBytes(bytes, 0, bytes.length);
+			
+			case TClass(ObjectID):
+				writeHeader(out, key, 0x07);
+				out.writeBytes(value.bytes, 0, 12);
+				
+			case TClass(BSONDocument):
+				writeHeader(out, key, 0x03);
+				bytes = documentToBytes(value);
+				out.writeInt32(#if haxe3 bytes.length + 4 #else haxe.Int32.ofInt(bytes.length + 4) #end);
+				out.writeBytes(bytes, 0, bytes.length);
+			
 			default:
-				if (Std.is(value, String))
-				{
-					writeHeader(out, key, 0x02);
-					writeString(out, value);
-				}
-				else if (Std.is(value, haxe.io.Bytes))
-				{
-					writeHeader(out, key, 0x05);
-					out.writeInt32(value.length);
-					out.writeByte(0x00); // generic
-					out.writeBytes(value, 0, value.length);
-				}
-				else if (Std.is(value, Int64))
-				{
-					writeHeader(out, key, 0x12);
-					out.writeInt32(Int64.getLow(value));
-					out.writeInt32(Int64.getHigh(value));
-				}
-				else if (Std.is(value, Date))
-				{
-					var d64 = (value : MongoDate).getTimeInt64();
-					writeHeader(out, key, 0x09);
-					out.writeInt32(Int64.getLow(d64));
-					out.writeInt32(Int64.getHigh(d64));
-				}
-				else if (Std.is(value, Array))
-				{
-					writeHeader(out, key, 0x04);
-					bytes = arrayToBytes(value);
-					out.writeInt32(#if haxe3 bytes.length + 4 #else haxe.Int32.ofInt(bytes.length + 4) #end);
-					out.writeBytes(bytes, 0, bytes.length);
-				}
-				else if (Std.is(value, ObjectID))
-				{
-					writeHeader(out, key, 0x07);
-					out.writeBytes(value.bytes, 0, 12);
-				}
-				else if (Std.is(value, BSONDocument)) // document/object
-				{
-					writeHeader(out, key, 0x03);
-					bytes = documentToBytes(value);
-					out.writeInt32(#if haxe3 bytes.length + 4 #else haxe.Int32.ofInt(bytes.length + 4) #end);
-					out.writeBytes(bytes, 0, bytes.length);
-				}
-				else if (Std.is(value, Dynamic)) // document/object
+				if (Std.is(value, Dynamic)) // document/object
 				{
 					writeHeader(out, key, 0x03);
 					bytes = objectToBytes(value);
