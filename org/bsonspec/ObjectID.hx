@@ -43,6 +43,23 @@ class ObjectID
 	{
 		return Date.fromTime( (bytes.get(3) | (bytes.get(2) << 8) | (bytes.get(1) << 16) | (bytes.get(0) << 24)) * 1000.0 );
 	}
+	
+	public function toHex():String
+	{
+		return bytes.toHex();
+	}
+	
+	public static function ofBytes(bytes:haxe.io.Bytes)
+	{
+		return new ObjectID(new haxe.io.BytesInput(bytes, 0, 12));
+	}
+	
+	public static function ofHex(hex:String)
+	{
+		return new haxe.crypto.BaseCode(HEX).decodeBytes(haxe.io.Bytes.ofString(hex.toLowerCase()));
+	}
+	
+	private static var HEX = haxe.io.Bytes.ofString("0123456789abcdef");
 
 	
 	public var bytes(default, null):Bytes;
