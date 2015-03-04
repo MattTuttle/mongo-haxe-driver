@@ -85,9 +85,12 @@ class Collection
 		db.runCommand({reIndex: name});
 	}
 
-	public inline function count():Int
+	public inline function count( ?query: Dynamic ):Int
 	{
-		var result = db.runCommand({count: name});
+		var c : {count: String, ?query: Dynamic} = { count: name };
+		if ( query != null )
+			c.query = query;
+		var result = db.runCommand(c);
 		return result.n;
 	}
 
