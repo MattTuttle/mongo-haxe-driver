@@ -122,6 +122,11 @@ class Database implements Dynamic<Collection>
 	{
 		return cmd.findOne({eval: script});
 	}
+	
+	public inline function getLastError():Dynamic 
+	{
+		return runCommand({getLastError: 1});
+	}
 
 	public var name(default, null):String;
 	public var mongo(default, null):Mongo;
