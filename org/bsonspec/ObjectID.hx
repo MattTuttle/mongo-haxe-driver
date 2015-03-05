@@ -56,7 +56,7 @@ class ObjectID
 	
 	public static function ofHex(hex:String)
 	{
-		return new haxe.crypto.BaseCode(HEX).decodeBytes(haxe.io.Bytes.ofString(hex.toLowerCase()));
+		return ofBytes(new haxe.crypto.BaseCode(HEX).decodeBytes(haxe.io.Bytes.ofString(hex.toLowerCase())));
 	}
 	
 	private static var HEX = haxe.io.Bytes.ofString("0123456789abcdef");
