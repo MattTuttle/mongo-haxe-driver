@@ -60,16 +60,23 @@ class BSONEncoder
 				out.writeByte(0x00); // generic
 				out.writeBytes(value, 0, value.length);
 			
+			#if (haxe_ver < 3.2)
 			case TClass(Int64):
 				writeHeader(out, key, 0x12);
 				out.writeInt32(Int64.getLow(value));
 				out.writeInt32(Int64.getHigh(value));
-			
 			case TClass(Date):
 				var d64 = (value : MongoDate).getTimeInt64();
 				writeHeader(out, key, 0x09);
 				out.writeInt32(Int64.getLow(d64));
 				out.writeInt32(Int64.getHigh(d64));
+			#else 
+			case TClass(Date):
+			var d64 = (value : MongoDate).getTimeInt64();
+			writeHeader(out, key, 0x09);
+			out.writeInt32(d64.low);
+			out.writeInt32(d64.high);
+			#end
 			
 			case TClass(Array):
 				writeHeader(out, key, 0x04);
@@ -88,6 +95,14 @@ class BSONEncoder
 				out.writeBytes(bytes, 0, bytes.length);
 			
 			default:
+				#if haxe_320
+				if ( Int64.is( value )) {
+					writeHeader(out, key, 0x12);
+					out.writeInt32(Int64.getLow(value));
+					out.writeInt32(Int64.getHigh(value));
+				}
+				else 
+				#end
 				if (Std.is(value, Dynamic)) // document/object
 				{
 					writeHeader(out, key, 0x03);
