@@ -2,7 +2,7 @@ package org.mongodb;
 
 import haxe.Int64;
 
-class Cursor
+class Cursor<T>
 {
 
 	public var collection(default, null):Collection;
@@ -74,12 +74,12 @@ class Cursor
 		return false;
 	}
 
-	public function next():Dynamic
+	public function next():T
 	{
 		return documents.shift();
 	}
 
-	public function limit(number:Int):Cursor
+	public function limit(number:Int):Cursor<T>
 	{
 		if (documents != null)
 			throw "Cursor.limit() must be used before retrieving anything";
@@ -87,7 +87,7 @@ class Cursor
 		return this;
 	}
 
-	public function skip(number:Int):Cursor
+	public function skip(number:Int):Cursor<T>
 	{
 		if (documents != null)
 			throw "Cursor.skip() must be used before retrieving anything";
@@ -95,7 +95,7 @@ class Cursor
 		return this;
 	}
 
-	public function sort(spec:Dynamic):Cursor
+	public function sort(spec:Dynamic):Cursor<T>
 	{
 		if (documents != null)
 			throw "Cursor.sort() must be used before retrieving anything";
@@ -103,7 +103,7 @@ class Cursor
 		return this;
 	}
 
-	public function toArray():Array<Dynamic>
+	public function toArray():Array<T>
 	{
 		if (documents != null)
 			throw "Cursor.toArray() must be used before retrieving anything";
@@ -113,7 +113,7 @@ class Cursor
 		return ret;
 	}
 
-	public function iterator():Iterator<Dynamic>
+	public function iterator():Iterator<T>
 	{
 		return this;
 	}
