@@ -28,8 +28,8 @@ class Database implements Dynamic<Collection>
 
 	public function listCollections():Array<String>
 	{
-		var o : Dynamic = { };
-		Reflect.setField( o , "$exists", 1);
+		var o:Dynamic = { };
+		Reflect.setField(o , "$exists", 1);
 
 		var collections = getCollection("system.namespaces").find({
 			options: o // find namespaces where options exists

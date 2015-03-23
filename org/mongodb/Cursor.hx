@@ -133,9 +133,8 @@ class Cursor<T>
 	private var noReturn:Int;
 	private var noLimit:Int;
 	private var cnx:Protocol;
-	private var cursorId:Int64;
+	private var cursorId:Null<Int64>;
 	private var documents:Array<Dynamic>;
 	private var finished:Bool;
 
 }
-
