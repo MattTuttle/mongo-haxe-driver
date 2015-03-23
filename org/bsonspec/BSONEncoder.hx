@@ -60,18 +60,18 @@ class BSONEncoder
 			writeHeader(out, key, 0x10);
 			out.writeInt32(#if haxe3 value #else haxe.Int32.ofInt(value) #end);
 		}
-		else if (Std.is(value, Int64))
+		else if (Int64.is(value))
 		{
 			writeHeader(out, key, 0x12);
-			out.writeInt32(Int64.getLow(value));
-			out.writeInt32(Int64.getHigh(value));
+			out.writeInt32(value.low);
+			out.writeInt32(value.high);
 		}
 		else if (Std.is(value, Date))
 		{
 			var d64 = (value : MongoDate).getTimeInt64();
 			writeHeader(out, key, 0x09);
-			out.writeInt32(Int64.getLow(d64));
-			out.writeInt32(Int64.getHigh(d64));
+			out.writeInt32(d64.low);
+			out.writeInt32(d64.high);
 		}
 		else if (Std.is(value, Array))
 		{

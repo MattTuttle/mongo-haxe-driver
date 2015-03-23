@@ -1,8 +1,7 @@
 package org.bsonspec;
 
 import haxe.Int64;
-import UInt;
-using haxe.Int64;
+// using haxe.Int64;
 
 @:forward
 abstract MongoDate(Date) {
@@ -12,11 +11,11 @@ abstract MongoDate(Date) {
         this = date;
     }
 
-    @:from public inline static function fromInt64time(ms:Int64):MongoDate
+    @:from public inline static function fromInt64Time(ms:Int64):MongoDate
     {
         // double = high << 32 + low
         //    with  a << b = a*(1 << b)
-        return new MongoDate(Date.fromTime(POW32f*ms.getHigh() + unsigned(ms.getLow())));
+        return new MongoDate(Date.fromTime(POW32f * ms.high + ms.low));
     }
 
     @:to public inline function getTimeInt64():Int64
@@ -34,13 +33,6 @@ abstract MongoDate(Date) {
         high = high >> (32 - xx);
         // trace('high: $high, low: $low');
         return Int64.make(high, low);
-    }
-
-    static function unsigned(i:UInt):Float
-    {
-        // conversion peformed by UInt.toFloat()
-        // basically, when negative, return POW32f + i
-        return i;
     }
 
     static var xx = 31;

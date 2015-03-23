@@ -106,8 +106,8 @@ class Protocol
 		writeInt32(out, number);
 
 		// write Int64
-		out.writeInt32(Int64.getLow(cursorId));
-		out.writeInt32(Int64.getHigh(cursorId));
+		out.writeInt32(cursorId.low);
+		out.writeInt32(cursorId.high);
 
 		request(OP_GETMORE, out.getBytes());
 	}
@@ -182,8 +182,8 @@ class Protocol
 		writeInt32(out, cursors.length); // num of cursors
 		for (cursor in cursors)
 		{
-			out.writeInt32(Int64.getHigh(cursor));
-			out.writeInt32(Int64.getLow(cursor));
+			out.writeInt32(cursor.high);
+			out.writeInt32(cursor.low);
 		}
 
 		request(OP_KILL_CURSORS, out.getBytes());
