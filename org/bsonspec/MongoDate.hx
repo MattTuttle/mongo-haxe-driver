@@ -17,7 +17,7 @@ abstract MongoDate(Date) {
         //    with  a << b = a*(1 << b)
         var time:Float;
         #if (haxe_ver < 3.2)
-        time = POW32f * ms.getHigh() + unsigned(ms.getLow());
+        time = POW32f * Int64.getHigh(ms) + unsigned(Int64.getLow(ms));
         #else
         time = POW32f * ms.high + unsigned(ms.low);
         #end
@@ -64,4 +64,3 @@ abstract MongoDate(Date) {
 }
 
 // random note: 1 << 32 = u0xffffffff + 1 = 4294967296
-

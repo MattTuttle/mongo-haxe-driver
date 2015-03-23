@@ -95,14 +95,26 @@ class BSONTest extends TestCase
 		{
 			var date = (Int64.make(high, low) : MongoDate);
 			var cal = date.getTimeInt64();
+
+			#if (haxe_ver < 3.2)
+
+			assertEquals(high, Int64.getHigh(cal));
+			#if neko  // on neko Date has 1000 ms precision
+			assertEquals(Math.floor(low/1000), Math.floor(Int64.getLow(cal)/1000));
+			#else
+			assertEquals(low, Int64.getLow(cal));
+			#end
+
+			#else
+
 			assertEquals(high, cal.high);
-#if neko  // on neko Date has 1000 ms precision
+			#if neko  // on neko Date has 1000 ms precision
 			assertEquals(Math.floor(low/1000), Math.floor(cal.low/1000));
-#else
-			// assertEquals(Math.floor(low/100), Math.floor(cal.low/100));
-			// assertEquals(Math.floor(low/10), Math.floor(cal.low/10));
+			#else
 			assertEquals(low, cal.low);
-#end
+			#end
+
+			#end
 		}
 
 		test(0, 1000);  // 1 second

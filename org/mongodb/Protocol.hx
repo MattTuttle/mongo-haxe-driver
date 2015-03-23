@@ -106,8 +106,13 @@ class Protocol
 		writeInt32(out, number);
 
 		// write Int64
+		#if (haxe_ver < 3.2)
+		out.writeInt32(Int64.getLow(cursorId));
+		out.writeInt32(Int64.getHigh(cursorId));
+		#else
 		out.writeInt32(cursorId.low);
 		out.writeInt32(cursorId.high);
+		#end
 
 		request(OP_GETMORE, out.getBytes());
 	}
@@ -182,8 +187,13 @@ class Protocol
 		writeInt32(out, cursors.length); // num of cursors
 		for (cursor in cursors)
 		{
+			#if (haxe_ver < 3.2)
+			out.writeInt32(Int64.getHigh(cursor));
+			out.writeInt32(Int64.getLow(cursor));
+			#else
 			out.writeInt32(cursor.high);
 			out.writeInt32(cursor.low);
+			#end
 		}
 
 		request(OP_KILL_CURSORS, out.getBytes());
@@ -325,4 +335,3 @@ class Protocol
 	private inline static var OP_DELETE       = 2006;
 	private inline static var OP_KILL_CURSORS = 2007;
 }
-
