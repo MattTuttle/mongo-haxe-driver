@@ -55,7 +55,7 @@ class BSONDecoder
 			case 0x05: // binary data
 				var len = readInt32(input);
 				var subtype = input.readByte();
-				// TODO: properly handle binary data
+				value = haxe.io.Bytes.alloc( len );
 				input.readBytes(value, 0, len);
 				bytes += len + 5;
 			case 0x06: // DBPointer

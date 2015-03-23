@@ -59,6 +59,12 @@ class Cursor
 		}
 		else if (noLimit == 0 || noLimit != noReturn)
 		{
+			// In the event that the result set of the query fits into one OP_REPLY message, cursorID will be 0
+			if ( haxe.Int64.isZero(cursorId) ) {
+				finished = true;
+				return false;
+			}
+
 			cnx.getMore(collection.fullname, cursorId);
 			if (checkResponse())
 			{

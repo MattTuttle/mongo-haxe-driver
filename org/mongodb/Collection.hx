@@ -85,9 +85,12 @@ class Collection
 		db.runCommand({reIndex: name});
 	}
 
-	public inline function count():Int
+	public inline function count( ?query: Dynamic ):Int
 	{
-		var result = db.runCommand({count: name});
+		var c : {count: String, ?query: Dynamic} = { count: name };
+		if ( query != null )
+			c.query = query;
+		var result = db.runCommand(c);
 		return result.n;
 	}
 
@@ -98,6 +101,17 @@ class Collection
 			cmd.query = query;
 		var result = db.runCommand(cmd);
 		return result.values;
+	}
+	
+	public function aggregate( pipeline : Array<Dynamic> ) 
+	{
+		// Use BSONDocument to ensure fields order
+		var bson = new org.bsonspec.BSONDocument();
+		bson.append( "aggregate", name );
+		bson.append( "pipeline", pipeline );
+		var result = db.runCommand( bson );
+		
+		return result;
 	}
 
 	public var fullname(default, null):String;
