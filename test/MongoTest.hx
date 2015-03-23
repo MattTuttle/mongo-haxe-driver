@@ -87,8 +87,8 @@ class MongoTest extends TestCase
 		assertEquals(1, posts.find(null, null, 0, 1).toArray().length);
 	}
 
-        public function testCursorMethods()
-        {
+	public function testCursorMethods()
+	{
 		assertEquals(NUM_POSTS - 2, posts.find().skip(2).toArray().length);
 		assertEquals(NUM_POSTS - 2, posts.find().limit(NUM_POSTS - 2).toArray().length);
 		assertEquals(NUM_POSTS - 1, posts.find().sort({ seq : -1 }).limit(1).toArray()[0].seq);

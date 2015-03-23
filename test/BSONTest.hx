@@ -33,7 +33,7 @@ class BSONTest extends TestCase
 			monkey: null,
 			bool: true
 		};
-		
+
 		#if sys
 		File.saveBytes("test.bson", BSON.encode(data));
 
@@ -43,15 +43,15 @@ class BSONTest extends TestCase
 		#else
 		var out = BSON.decode(new haxe.io.BytesInput(BSON.encode(data)));
 		#end
-		
+
 		assertSame(data, out);
-		
+
 		// overflow (-2)
 		assertSame(data.int + data.int, out.int + out.int);
-		
+
 		// no overflow
 		assertSame(data.float + data.float, out.float + out.float);
-		
+
 		assertSame(data._id.getDate(),  out._id.getDate());
 	}
 
@@ -95,13 +95,13 @@ class BSONTest extends TestCase
 		{
 			var date = (Int64.make(high, low) : MongoDate);
 			var cal = date.getTimeInt64();
-			assertEquals(high, cal.getHigh());
+			assertEquals(high, cal.high);
 #if neko  // on neko Date has 1000 ms precision
-			assertEquals(Math.floor(low/1000), Math.floor(cal.getLow()/1000));
+			assertEquals(Math.floor(low/1000), Math.floor(cal.low/1000));
 #else
-			// assertEquals(Math.floor(low/100), Math.floor(cal.getLow()/100));
-			// assertEquals(Math.floor(low/10), Math.floor(cal.getLow()/10));
-			assertEquals(low, cal.getLow());
+			// assertEquals(Math.floor(low/100), Math.floor(cal.low/100));
+			// assertEquals(Math.floor(low/10), Math.floor(cal.low/10));
+			assertEquals(low, cal.low);
 #end
 		}
 
