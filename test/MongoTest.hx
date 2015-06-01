@@ -72,11 +72,11 @@ class MongoTest extends TestCase
 		assertEquals(( obj.setDate:Date ).getTime(), 1e10);
 	}
 
-	public function testLogin()
-	{
-		db.addUser("user", "pass");
-		assertTrue(db.login("user", "pass"));
-	}
+	// public function testLogin()
+	// {
+	// 	db.addUser("user", "pass");
+	// 	assertTrue(db.login("user", "pass"));
+	// }
 
 	public function testReturnOpts()
 	{

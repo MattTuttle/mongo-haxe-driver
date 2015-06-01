@@ -34,15 +34,7 @@ class BSONTest extends TestCase
 			bool: true
 		};
 
-		#if sys
-		File.saveBytes("test.bson", BSON.encode(data));
-
-		var out = BSON.decode(File.read("test.bson", true));
-
-		File.saveContent("test.txt", Std.string( out ) );
-		#else
 		var out = BSON.decode(new haxe.io.BytesInput(BSON.encode(data)));
-		#end
 
 		assertSame(data, out);
 
@@ -76,11 +68,11 @@ class BSONTest extends TestCase
 			.append( "monkey", null )
 			.append( "$in", [1, 3] );
 
-		File.saveBytes("test-doc.bson", BSON.encode( doc ) );
-		File.saveContent("test-doc.txt", doc.toString() );
+		// File.saveBytes("test-doc.bson", BSON.encode( doc ) );
+		// File.saveContent("test-doc.txt", doc.toString() );
 
-		var out:Dynamic = BSON.decode(File.read("test.bson", true));
-                assertFalse(false);
+		// var out:Dynamic = BSON.decode(File.read("test.bson", true));
+        assertFalse(false);
 	}
 
 	@:access(org.bsonspec.MongoDate)
