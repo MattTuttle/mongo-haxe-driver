@@ -58,7 +58,12 @@ class Protocol
 				trace(e);
 			}, false, 0, true);
 #else
-		socket.connect(new Host(host), port);
+		try {
+			socket.connect(new Host(host), port);
+		}catch(e : Dynamic ){
+			try{ socket.close(); }catch(e : Dynamic ){}
+			neko.Lib.rethrow(e);
+		}
 #end
 	}
 
