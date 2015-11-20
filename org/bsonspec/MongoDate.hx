@@ -36,11 +36,18 @@ abstract MongoDate(Date) {
         return Int64.make(high, low);
     }
 
-    static function unsigned(i:UInt):Float
+    static function unsigned(int):Float
     {
         // conversion peformed by UInt.toFloat()
         // basically, when negative, return POW32f + i
-        return i;
+		if (int < 0) {
+			return 4294967296.0 + int;
+		}
+		else {
+			// + 0.0 here to make sure we promote to Float on some platforms
+			// In particular, PHP was having issues when comparing to Int in the == op.
+			return int + 0.0;
+		}
     }
 
     static var xx = 31;
