@@ -72,11 +72,11 @@ class MongoTest extends TestCase
 		assertEquals(( obj.setDate:Date ).getTime(), 1e10);
 	}
 
-	public function testLogin()
-	{
-		db.addUser("user", "pass");
-		assertTrue(db.login("user", "pass"));
-	}
+	// public function testLogin()
+	// {
+	// 	db.addUser("user", "pass");
+	// 	assertTrue(db.login("user", "pass"));
+	// }
 
 	public function testReturnOpts()
 	{
@@ -87,8 +87,8 @@ class MongoTest extends TestCase
 		assertEquals(1, posts.find(null, null, 0, 1).toArray().length);
 	}
 
-        public function testCursorMethods()
-        {
+	public function testCursorMethods()
+	{
 		assertEquals(NUM_POSTS - 2, posts.find().skip(2).toArray().length);
 		assertEquals(NUM_POSTS - 2, posts.find().limit(NUM_POSTS - 2).toArray().length);
 		assertEquals(NUM_POSTS - 1, posts.find().sort({ seq : -1 }).limit(1).toArray()[0].seq);

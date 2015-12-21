@@ -1,8 +1,7 @@
 package org.bsonspec;
 
 import haxe.Int64;
-import UInt;
-using haxe.Int64;
+// using haxe.Int64;
 
 @:forward
 abstract MongoDate(Date) {
@@ -12,11 +11,17 @@ abstract MongoDate(Date) {
         this = date;
     }
 
-    @:from public inline static function fromInt64time(ms:Int64):MongoDate
+    @:from public inline static function fromInt64Time(ms:Int64):MongoDate
     {
         // double = high << 32 + low
         //    with  a << b = a*(1 << b)
-        return new MongoDate(Date.fromTime(POW32f*ms.getHigh() + unsigned(ms.getLow())));
+        var time:Float;
+        #if (haxe_ver < 3.2)
+        time = POW32f * Int64.getHigh(ms) + unsigned(Int64.getLow(ms));
+        #else
+        time = POW32f * ms.high + unsigned(ms.low);
+        #end
+        return new MongoDate(Date.fromTime(time));
     }
 
     @:to public inline function getTimeInt64():Int64
@@ -24,9 +29,9 @@ abstract MongoDate(Date) {
         var t = this.getTime();
         // compute using only xx bits for each i32 part
         // to avoid problems with overflow and (TODO) precision
-        var f = t/POWxxf;
+        var f = t / POWxxf;
         var high = Std.int(f);
-        var ti = POWxxf*high;
+        var ti = POWxxf * high;
         var low = Std.int(t - ti);  // remainder
         // trace('t: $t, f: $f, high: $high, POWxxf*high: $ti, low: $low, lowf: ${t - ti}');
         // adjust for int32
@@ -40,10 +45,12 @@ abstract MongoDate(Date) {
     {
         // conversion peformed by UInt.toFloat()
         // basically, when negative, return POW32f + i
-		if (int < 0) {
+		if (int < 0)
+        {
 			return 4294967296.0 + int;
 		}
-		else {
+		else
+        {
 			// + 0.0 here to make sure we promote to Float on some platforms
 			// In particular, PHP was having issues when comparing to Int in the == op.
 			return int + 0.0;
@@ -57,4 +64,3 @@ abstract MongoDate(Date) {
 }
 
 // random note: 1 << 32 = u0xffffffff + 1 = 4294967296
-

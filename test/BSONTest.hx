@@ -33,25 +33,17 @@ class BSONTest extends TestCase
 			monkey: null,
 			bool: true
 		};
-		
-		#if sys
-		File.saveBytes("test.bson", BSON.encode(data));
 
-		var out = BSON.decode(File.read("test.bson", true));
-
-		File.saveContent("test.txt", Std.string( out ) );
-		#else
 		var out = BSON.decode(new haxe.io.BytesInput(BSON.encode(data)));
-		#end
-		
+
 		assertSame(data, out);
-		
+
 		// overflow (-2)
 		assertSame(data.int + data.int, out.int + out.int);
-		
+
 		// no overflow
 		assertSame(data.float + data.float, out.float + out.float);
-		
+
 		assertSame(data._id.getDate(),  out._id.getDate());
 	}
 
@@ -76,11 +68,11 @@ class BSONTest extends TestCase
 			.append( "monkey", null )
 			.append( "$in", [1, 3] );
 
-		File.saveBytes("test-doc.bson", BSON.encode( doc ) );
-		File.saveContent("test-doc.txt", doc.toString() );
+		// File.saveBytes("test-doc.bson", BSON.encode( doc ) );
+		// File.saveContent("test-doc.txt", doc.toString() );
 
-		var out:Dynamic = BSON.decode(File.read("test.bson", true));
-                assertFalse(false);
+		// var out:Dynamic = BSON.decode(File.read("test.bson", true));
+        assertFalse(false);
 	}
 
 	@:access(org.bsonspec.MongoDate)
@@ -95,14 +87,26 @@ class BSONTest extends TestCase
 		{
 			var date = (Int64.make(high, low) : MongoDate);
 			var cal = date.getTimeInt64();
-			assertEquals(high, cal.getHigh());
-#if neko  // on neko Date has 1000 ms precision
-			assertEquals(Math.floor(low/1000), Math.floor(cal.getLow()/1000));
-#else
-			// assertEquals(Math.floor(low/100), Math.floor(cal.getLow()/100));
-			// assertEquals(Math.floor(low/10), Math.floor(cal.getLow()/10));
-			assertEquals(low, cal.getLow());
-#end
+
+			#if (haxe_ver < 3.2)
+
+			assertEquals(high, Int64.getHigh(cal));
+			#if neko  // on neko Date has 1000 ms precision
+			assertEquals(Math.floor(low/1000), Math.floor(Int64.getLow(cal)/1000));
+			#else
+			assertEquals(low, Int64.getLow(cal));
+			#end
+
+			#else
+
+			assertEquals(high, cal.high);
+			#if neko  // on neko Date has 1000 ms precision
+			assertEquals(Math.floor(low/1000), Math.floor(cal.low/1000));
+			#else
+			assertEquals(low, cal.low);
+			#end
+
+			#end
 		}
 
 		test(0, 1000);  // 1 second

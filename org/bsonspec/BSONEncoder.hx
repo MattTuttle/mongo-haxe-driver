@@ -37,71 +37,79 @@ class BSONEncoder
 		{
 			case TNull:
 				writeHeader(out, key, 0x0A);
-			
+
 			case TInt:
 				writeHeader(out, key, 0x10);
 				out.writeInt32(#if haxe3 value #else haxe.Int32.ofInt(value) #end);
-				
+
 			case TFloat:
 				writeHeader(out, key, 0x01);
 				out.writeDouble(value);
-			
+
 			case TBool:
 				writeHeader(out, key, 0x08);
 				out.writeByte( value ? 0x01 : 0x00 );
-			
+
 			case TClass(String):
 				writeHeader(out, key, 0x02);
 				writeString(out, value);
-			
+
 			case TClass(Bytes):
 				writeHeader(out, key, 0x05);
 				out.writeInt32(value.length);
 				out.writeByte(0x00); // generic
 				out.writeBytes(value, 0, value.length);
-			
+
+
 			#if (haxe_ver < 3.2)
+
 			case TClass(Int64):
 				writeHeader(out, key, 0x12);
 				out.writeInt32(Int64.getLow(value));
 				out.writeInt32(Int64.getHigh(value));
+
 			case TClass(Date):
 				var d64 = (value : MongoDate).getTimeInt64();
 				writeHeader(out, key, 0x09);
 				out.writeInt32(Int64.getLow(d64));
 				out.writeInt32(Int64.getHigh(d64));
-			#else 
+
+			#else
+
 			case TClass(Date):
-			var d64 = (value : MongoDate).getTimeInt64();
-			writeHeader(out, key, 0x09);
-			out.writeInt32(d64.low);
-			out.writeInt32(d64.high);
+				var d64 = (value : MongoDate).getTimeInt64();
+				writeHeader(out, key, 0x09);
+				out.writeInt32(d64.low);
+				out.writeInt32(d64.high);
+
 			#end
-			
+
+
 			case TClass(Array):
 				writeHeader(out, key, 0x04);
 				bytes = arrayToBytes(value);
 				out.writeInt32(#if haxe3 bytes.length + 4 #else haxe.Int32.ofInt(bytes.length + 4) #end);
 				out.writeBytes(bytes, 0, bytes.length);
-			
+
 			case TClass(ObjectID):
 				writeHeader(out, key, 0x07);
 				out.writeBytes(value.bytes, 0, 12);
-				
+
 			case TClass(BSONDocument):
 				writeHeader(out, key, 0x03);
 				bytes = documentToBytes(value);
 				out.writeInt32(#if haxe3 bytes.length + 4 #else haxe.Int32.ofInt(bytes.length + 4) #end);
 				out.writeBytes(bytes, 0, bytes.length);
-			
+
 			default:
 				#if haxe_320
-				if ( Int64.is( value )) {
+				if (Int64.is(value))
+				{
 					writeHeader(out, key, 0x12);
-					out.writeInt32(Int64.getLow(value));
-					out.writeInt32(Int64.getHigh(value));
+					out.writeInt32(value.low);
+					out.writeInt32(value.high);
 				}
-				else 
+				else
 				#end
 				if (Std.is(value, Dynamic)) // document/object
 				{
