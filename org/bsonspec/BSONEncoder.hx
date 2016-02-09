@@ -102,7 +102,7 @@ class BSONEncoder
 				out.writeBytes(bytes, 0, bytes.length);
 
 			default:
-				#if haxe_320
+				#if (haxe_ver >= 3.2)
 				if (Int64.is(value))
 				{
 					writeHeader(out, key, 0x12);
