@@ -35,6 +35,14 @@ class Cursor<T>
 		}
 		else
 		{
+			if( noLimit != 0 && noReturn > 0 ){
+				noReturn -= documents.length;
+				if( noReturn <= 0 ){
+					if( cursorId != null )
+						cnx.killCursors([cursorId]);
+					cursorId = null;
+				}
+			}
 			return true;
 		}
 	}
@@ -60,12 +68,12 @@ class Cursor<T>
 		else if (noLimit == 0 || noLimit != noReturn)
 		{
 			// In the event that the result set of the query fits into one OP_REPLY message, cursorID will be 0
-			if ( haxe.Int64.isZero(cursorId) ) {
+			if ( cursorId == null || haxe.Int64.isZero(cursorId) ) {
 				finished = true;
 				return false;
 			}
 
-			cnx.getMore(collection.fullname, cursorId);
+			cnx.getMore(collection.fullname, cursorId, noReturn);
 			if (checkResponse())
 			{
 				return true;
