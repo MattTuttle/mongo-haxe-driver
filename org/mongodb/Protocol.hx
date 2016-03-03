@@ -62,7 +62,7 @@ class Protocol
 			socket.connect(new Host(host), port);
 		}catch(e : Dynamic ){
 			try{ socket.close(); }catch(e : Dynamic ){}
-			neko.Lib.rethrow(e);
+			throw e;
 		}
 #end
 	}
