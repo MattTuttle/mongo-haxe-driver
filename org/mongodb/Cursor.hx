@@ -110,6 +110,14 @@ class Cursor<T>
 		addQueryElement("$orderby", spec);
 		return this;
 	}
+	
+	public function maxTimeMS(ms:Int):Cursor<T>
+	{
+		if (documents != null)
+			throw "Cursor.maxTimeMS() must be used before retrieving anything";
+		addQueryElement("$maxTimeMS", ms);
+		return this;
+	}
 
 	public function toArray():Array<T>
 	{
