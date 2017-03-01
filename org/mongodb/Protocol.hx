@@ -29,6 +29,8 @@ enum ReplyFlags
 
 class Protocol
 {
+	static var CONNECTION_TIMEOUT = 3;
+	static var DEFAULT_TIMEOUT = 7200;
 	public static function open(?host:String = "localhost", ?port:Int = 27017):Protocol
 	{
 		var cnx = new Protocol();
@@ -58,8 +60,10 @@ class Protocol
 				trace(e);
 			}, false, 0, true);
 #else
+		socket.setTimeout(CONNECTION_TIMEOUT);
 		try {
 			socket.connect(new Host(host), port);
+			socket.setTimeout(DEFAULT_TIMEOUT);
 		}catch(e : Dynamic ){
 			try{ socket.close(); }catch(e : Dynamic ){}
 			throw e;
