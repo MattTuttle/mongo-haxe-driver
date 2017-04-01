@@ -27,10 +27,7 @@ class Cursor<T>
 		if (documents.length == 0)
 		{
 			finished = true;
-			if (cursorId != null)
-			{
-				cnx.killCursors([cursorId]);
-			}
+			cnx.killCursors([cursorId]);
 			return false;
 		}
 		else
@@ -149,7 +146,7 @@ class Cursor<T>
 	private var noReturn:Int;
 	private var noLimit:Int;
 	private var cnx:Protocol;
-	private var cursorId:Null<Int64>;
+	private var cursorId:Int64;
 	private var documents:Array<Dynamic>;
 	private var finished:Bool;
 
